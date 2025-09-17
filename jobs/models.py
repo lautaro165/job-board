@@ -10,7 +10,7 @@ class JobPost(models.Model):
     
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     
-    company = models.ForeignKey("Company",on_delete = models.CASCADE, related_name="Jobs", null=True, blank=True)
+    company = models.ForeignKey("companies.Company",on_delete = models.CASCADE, related_name="Jobs", null=True, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     
     FULL_TIME = 'FT'
@@ -37,7 +37,7 @@ class JobPost(models.Model):
     posted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    applicants = models.ManyToManyField(CustomUser, through="Application", related_name="applied_jobs")
+    applicants = models.ManyToManyField(CustomUser, through="applications.Application", related_name="applied_jobs")
 
     def clean(self):
         if self.min_wage > self.max_wage:
