@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import *
+from . import views
 
 urlpatterns = [
-    
+    path("get-jobs-list/", views.get_jobs_list, name="get_jobs_list")
 ]
