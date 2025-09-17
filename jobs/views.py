@@ -3,6 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
+from django.core.paginator import Paginator
+
 from .models import JobPost
 from .serializers import JobPostSerializer
 
@@ -11,9 +13,12 @@ from .serializers import JobPostSerializer
 @api_view(["GET"])
 def get_jobs_list(request):
     jobs = JobPost.objects.all().order_by("?")
-    serializer = JobPostSerializer(jobs, many=True)
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    page_number = request.GET.get("page",1)
+    paginator = Paginator(jobs, 10)
+    page_jobs = paginator.get_page(page_number)
+    
+    return Response(JobPostSerializer(page_jobs, many=True).data,status=status.HTTP_200_OK)
 
 @permission_classes([IsAuthenticated])
 def post_job(request):
