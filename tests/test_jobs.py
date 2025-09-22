@@ -10,7 +10,7 @@ from jobs.serializers import JobPostSerializer
 # VIEWS TESTS
 
 @pytest.mark.django_db
-def test_job_post(user_tokens):
+def test_post_job(user_tokens):
     client = APIClient()
 
     data = {
@@ -27,3 +27,24 @@ def test_job_post(user_tokens):
     print(response.status_code)
 
     assert response.status_code == 201
+
+@pytest.mark.django_db
+def test_edit_job_post(job, user_tokens):
+    client = APIClient()
+    
+    updated_data = {
+        "title": "Django Developer",
+        "description": "Develop and maintain Django applications."
+    }
+    
+    access_token = user_tokens["access"]
+    
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
+    
+    response = client.put(reverse("edit_job_post", kwargs={"job_id":job.id}),data=updated_data)
+    
+    job_instance = JobPost.objects.get(id=job.id)
+
+    assert response.status_code == 200
+    assert job_instance.title == updated_data["title"]
+    assert job_instance.description == updated_data["description"]
