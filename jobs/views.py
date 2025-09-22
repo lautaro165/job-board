@@ -21,6 +21,7 @@ def get_jobs_list(request):
     return Response(JobPostSerializer(page_jobs, many=True).data,status=status.HTTP_200_OK)
 
 @permission_classes([IsAuthenticated])
+@api_view(["POST"])
 def post_job(request):
     data = request.data
 
@@ -28,6 +29,6 @@ def post_job(request):
 
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status.HTTP_200_OK)
+        return Response(serializer.data, status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
