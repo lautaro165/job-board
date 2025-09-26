@@ -4,5 +4,6 @@ from . import views
 urlpatterns = [
     path("get-jobs-list/", views.get_jobs_list, name="get_jobs_list"),
     path("post-job/", views.post_job, name="post_job"),
-    path("edit-job-post/<int:job_id>", views.edit_job_post, name="edit_job_post")
+    path("edit-job-post/<int:job_id>", views.edit_job_post, name="edit_job_post"),
+    path("delete-job-post/<int:job_id>/", views.delete_job_post, name="delete_job_post")
 ]

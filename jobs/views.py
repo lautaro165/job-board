@@ -53,3 +53,26 @@ def edit_job_post(request, job_id):
         updated_post.save()
         return Response(updated_post.data, status=status.HTTP_200_OK)
     return Response(updated_post.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_job_post(request, job_id):
+    try:
+        job_post = JobPost.objects.get(id=job_id)
+    except JobPost.DoesNotExist:
+        return Response(
+            {"error": f"There are no jobs with id {job_id}"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    if job_post.owner != request.user:
+        return Response(
+            {"error": "You cannot delete this job post"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    job_post.delete()
+    return Response(
+        {"message": f"Job post with id {job_id} has been deleted"},
+        status=status.HTTP_204_NO_CONTENT
+    )
