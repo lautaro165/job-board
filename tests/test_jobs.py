@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from jobs.models import JobPost
 from jobs.serializers import JobPostSerializer
+from users.models import CustomUser
 
 # VIEWS TESTS
 
@@ -48,3 +49,39 @@ def test_edit_job_post(job, user_tokens):
     assert response.status_code == 200
     assert job_instance.title == updated_data["title"]
     assert job_instance.description == updated_data["description"]
+
+
+@pytest.mark.django_db
+def test_delete_job_post_owner_can_delete(user, job):
+    client = APIClient()
+
+    client.force_authenticate(user=user)
+
+    response = client.delete(reverse("delete_job_post", kwargs={"job_id":job.id}))
+
+    assert response.status_code == 204
+    assert JobPost.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_delete_job_post_other_user_forbidden(user, user_2, job):
+    client = APIClient()
+    
+    client.force_authenticate(user=user_2)
+
+    url = f"/api/jobs/{job.id}/delete/"
+    response = client.delete(reverse("delete_job_post", kwargs={"job_id":job.id}))
+
+    assert response.status_code == 403
+    assert JobPost.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_delete_job_post_not_found(user, job):
+    client = APIClient()
+    
+    client.force_authenticate(user=user)
+
+    response = client.delete((reverse("delete_job_post", kwargs={"job_id":81684})))
+
+    assert response.status_code == 404
