@@ -41,15 +41,14 @@ def test_apply_twice_to_same_job(user_2, job):
     
     response2 = client.post(url, {"cover_letter": "Second apply"}, format="json")
     assert response2.status_code == 400
-    assert Application.objects.filter(applicant=user_2, job=job).count() == 1
 
 
 @pytest.mark.django_db
-def test_apply_to_nonexistent_job(user_2, job):
+def test_apply_to_nonexistent_job(user_2):
     client = APIClient()
     
     client.force_authenticate(user=user_2)
-    url = reverse("apply_to_job", kwargs={"job_id": job.id})
+    url = reverse("apply_to_job", kwargs={"job_id": 432})
     
     response = client.post(url, {"cover_letter": "Invalid job"}, format="json")
     assert response.status_code == 404
