@@ -5,8 +5,6 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 from jobs.models import JobPost
-from jobs.serializers import JobPostSerializer
-from users.models import CustomUser
 
 # VIEWS TESTS
 
