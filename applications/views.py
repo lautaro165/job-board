@@ -31,3 +31,27 @@ def apply_to_job(request, job_id):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def withdraw_application(request, application_id):
+    try:
+        application = Application.objects.get(id=application_id)
+    except Application.DoesNotExist:
+        return Response(
+            {"error": f"There is no application with id {application_id}"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    if application.user != request.user:
+        return Response(
+            {"error": "You cannot withdraw an application that is not yours"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    application.delete()
+    return Response(
+        {"message": f"Application with id {application_id} has been withdrawn"},
+        status=status.HTTP_204_NO_CONTENT
+    )
