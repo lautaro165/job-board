@@ -55,3 +55,11 @@ def withdraw_application(request, application_id):
         {"message": f"Application with id {application_id} has been withdrawn"},
         status=status.HTTP_204_NO_CONTENT
     )
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_applications(request):
+    applications = Application.objects.filter(applicant=request.user)
+    serializer = ApplicationSerializer(applications, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
