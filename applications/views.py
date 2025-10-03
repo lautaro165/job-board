@@ -63,3 +63,19 @@ def get_user_applications(request):
     serializer = ApplicationSerializer(applications, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_job_applications(request, job_id):
+    try:
+        job = JobPost.objects.get(id=job_id)
+    except JobPost.DoesNotExist:
+        return Response({"error":f"No job found with id {job_id}"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if job.owner != request.user:
+        return Response({"error":"You can't access to this job's applications"},status=status.HTTP_403_FORBIDDEN)
+
+    applications = Application.objects.filter(job=job)
+    serializer = ApplicationSerializer(applications, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
