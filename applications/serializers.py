@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Application
+from .models import Application, ApplicationResponse
 
 
 class ApplicationSerializer(ModelSerializer):
@@ -13,3 +13,8 @@ class ApplicationSerializer(ModelSerializer):
         job = self.context["job"]
 
         return Application.objects.create(applicant=user, job=job, **validated_data)
+    
+class ApplicationResponseSerializer(ModelSerializer):
+    class Meta:
+        model = ApplicationResponse
+        fields = ["application", "responder", "message", "created_at"]
