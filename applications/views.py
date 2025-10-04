@@ -5,7 +5,7 @@ from rest_framework import status
 
 from jobs.models import JobPost
 from .models import Application
-from .serializers import ApplicationSerializer
+from .serializers import ApplicationSerializer, ApplicationResponseSerializer
 
 # Create your views here.
 
@@ -31,6 +31,34 @@ def apply_to_job(request, job_id):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def responde_to_application(request, application_id):
+    try:
+        application = Application.objects.get(id=application_id)
+    except Application.DoesNotExist:
+        return Response({"error": f"There is no application with id {application_id}"},status=status.HTTP_404_NOT_FOUND)
+
+    if request.user != application.job.owner:
+        return Response({"error":"You can't access to handle this application"}, status=status.HTTP_403_FORBIDDEN)
+    
+    status_value = request.data.get("status")
+    message = request.data.get("message")
+
+    if not status_value in ["accepted", "rejected", "reviewed"]:
+        return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+
+    response_serializer = ApplicationResponseSerializer(application=application, responder=request.user, message=message)
+
+    application.status = status_value
+    application.save()
+
+    if response_serializer.is_valid():
+        response_serializer.save()
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+    return Response(response_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["DELETE"])
