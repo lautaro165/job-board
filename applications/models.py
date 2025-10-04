@@ -28,7 +28,7 @@ class Application(models.Model):
 class ApplicationResponse(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="responses")
     responder = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    message = models.TextField(blank=True)
+    message = models.TextField(null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
