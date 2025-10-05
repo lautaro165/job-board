@@ -50,7 +50,11 @@ def responde_to_application(request, application_id):
     if not status_value in ["accepted", "rejected", "reviewed"]:
         return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
 
-    response_serializer = ApplicationResponseSerializer(application=application, responder=request.user, message=message)
+    response_serializer = ApplicationResponseSerializer(data={
+        "application":application.id,
+        "responder":request.user.id,
+        "message":message
+    })
 
     application.status = status_value
     application.save()
