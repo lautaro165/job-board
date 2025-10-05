@@ -52,3 +52,21 @@ def test_apply_to_nonexistent_job(user_2):
     
     response = client.post(url, {"cover_letter": "Invalid job"}, format="json")
     assert response.status_code == 404
+
+@pytest.mark.django_db
+def test_responde_to_application(user, application):
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    url = reverse("responde_to_application", kwargs={"application_id": application.id})
+
+    data = {
+        "status":"rejected"
+    }
+
+    response = client.patch(url, data=data, format="json")
+    
+    print("RESPONSE")
+    print(response.data)
+
+    assert response.status_code == 200
