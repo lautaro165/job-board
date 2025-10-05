@@ -26,7 +26,7 @@ def user_2():
 
 @pytest.fixture
 def application(user, job):
-    return Application.objects.create(applicant=user.employee_profile, job=job)
+    return Application.objects.create(applicant=user, job=job)
 
 @pytest.fixture
 def user_tokens(user):
