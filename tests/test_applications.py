@@ -65,8 +65,5 @@ def test_responde_to_application(user, application):
     }
 
     response = client.patch(url, data=data, format="json")
-    
-    print("RESPONSE")
-    print(response.data)
 
     assert response.status_code == 200
