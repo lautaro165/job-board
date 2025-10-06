@@ -1,0 +1,18 @@
+[
+    {
+        "username": "random_user",
+        "email": "random_email@mail.com",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "short",
+        "expected_error_message": "diasiodnasiod"
+    },
+    {
+        "username": "random_user",
+        "email": "invalid email",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "valid_password",
+        "expected_error_message": "diasiodnasiod"
+    }
+]
