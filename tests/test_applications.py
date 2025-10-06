@@ -66,4 +66,7 @@ def test_responde_to_application(user, application):
 
     response = client.patch(url, data=data, format="json")
 
+    application.refresh_from_db()
+
     assert response.status_code == 200
+    assert application.status == "rejected"
