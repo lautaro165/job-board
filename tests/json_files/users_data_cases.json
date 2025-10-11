@@ -1,0 +1,37 @@
+[
+    {
+        "username": "random_user",
+        "email": "lautaro25@outlook.com.ar",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "valid_password",
+        "password2": "valid_password",
+        "expected_status_code": 201
+    },{
+        "username": "random_user",
+        "email": "lautaro25@outlook.com.ar",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "password1",
+        "password2": "different_password",
+        "expected_status_code": 400
+    },
+    {
+        "username": "random_user321",
+        "email": "random_email@mail.com",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "short",
+        "password2": "short",
+        "expected_status_code": 400
+    },
+    {
+        "username": "random_user434",
+        "email": "invalid email",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "valid_password",
+        "password2": "valid_password",
+        "expected_status_code": 400
+    }
+]
