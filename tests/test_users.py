@@ -33,11 +33,12 @@ def test_valid_register_user():
     assert "message" in response.data
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("case", load_invalid_cases())
+@pytest.mark.parametrize("case", load_invalid_cases(), ids=["Invalid password", "Invalid email"])
 def test_invalid_register_user(case):
     client = APIClient()
     
+    expected_status_code = case.pop("expected_status_code")
+    
     response = client.post(reverse("register_user"), data=case)
-    # expected_error = case.pop("expected_error_message")
 
-    assert response.status_code == 400
+    assert response.status_code == expected_status_code
