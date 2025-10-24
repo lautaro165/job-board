@@ -13,6 +13,20 @@ class CustomUserRegistrationSerializer(ModelSerializer):
         model=CustomUser
         fields=["id", "username", "email", "first_name", "last_name", "date_joined","role", "password", "password2"]
 
+    def validate_email(self, value):
+        
+        if CustomUser.objects.filter(email=value).exists():
+            raise ValidationError("This email is already in use")
+        
+        return value
+
+    def validate_password2(self, value):
+        
+        if not value.strip():
+            raise ValidationError("You must write your password twice.")
+        
+        return value
+
     def validate(self, data): 
         password = data.get("password")
         password2 = data.get("password2")
