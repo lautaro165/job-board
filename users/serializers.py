@@ -1,20 +1,31 @@
 from rest_framework.serializers import ModelSerializer, CharField
+from rest_framework.exceptions import ValidationError
 
 from .models import CustomUser
 
 class CustomUserRegistrationSerializer(ModelSerializer):
-    password = CharField(write_only=True, min_length=6)
-    
+    PASSWORD_MIN_LENGTH = 6
+
+    password = CharField(write_only=True, min_length=PASSWORD_MIN_LENGTH)
+    password2 = CharField(write_only=True, min_length=PASSWORD_MIN_LENGTH)
+
     class Meta:
         model=CustomUser
-        fields=["id", "username", "email", "first_name", "last_name", "date_joined","role", "password"]
+        fields=["id", "username", "email", "first_name", "last_name", "date_joined","role", "password", "password2"]
+
+    def validate(self, data): 
+        password = data.get("password")
+        password2 = data.get("password2")
+
+        if not password == password2:
+            raise ValidationError("Passwords don't match")
+        
+        return data
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data.get("email"),
-            password=validated_data["password"]
-        )
+        validated_data.pop("password")
+        validated_data.pop("password2")
+        user = CustomUser.objects.create_user(**validated_data)
         return user
     
     
