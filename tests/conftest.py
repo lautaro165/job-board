@@ -49,3 +49,12 @@ def user_2_tokens(user_2):
         "refresh_token_expires_time": int(refresh.lifetime.total_seconds()),
         "access_token_expires_time": int(access.lifetime.total_seconds())
     }
+
+@pytest.fixture(scope="function")
+def existing_test_user(django_db_blocker):
+    with django_db_blocker.unblock():
+        return CustomUser.objects.create_user(
+            username="existing_user",
+            email="random_user@outlook.com",
+            password="somepassword"
+        )
