@@ -16,7 +16,7 @@ def load_registration_cases():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("case", load_registration_cases())
-def test_register_user(case):
+def test_register_user(case, existing_test_user):
     client = APIClient()
     
     expected_status_code = case.pop("expected_status_code")
@@ -40,6 +40,4 @@ def test_register_user(case):
 
         assert CustomUser.objects.filter(username=user["username"], email=user["email"]).exists(), f"User '{user["username"]}' should have been created but was not."
     else:
-
-
-        assert not CustomUser.objects.filter(username=["username"], email=case["email"]).exists(), f"User '{case["username"]}' should NOT exist but was found in the DB."
+        assert not CustomUser.objects.filter(username=case["username"], email=case["email"]).exists(), f"User '{case["username"]}' should NOT exist but was found in the DB."
