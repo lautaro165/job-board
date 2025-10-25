@@ -15,8 +15,7 @@
         "password": "password1",
         "password2": "different_password",
         "expected_status_code": 400
-    },
-    {
+    },{
         "username": "random_user321",
         "email": "random_email@mail.com",
         "first_name": "user fistname",
@@ -24,10 +23,24 @@
         "password": "short",
         "password2": "short",
         "expected_status_code": 400
-    },
-    {
+    },{
         "username": "random_user434",
         "email": "invalid email",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "valid_password",
+        "password2": "valid_password",
+        "expected_status_code": 400
+    },{
+        "username": "random_user435",
+        "email": "random_email435@gmail.com",
+        "first_name": "user fistname",
+        "last_name": "user lastname",
+        "password": "valid_password",
+        "expected_status_code": 400
+    },{
+        "username": "random_user436",
+        "email": "random_user@outlook.com",
         "first_name": "user fistname",
         "last_name": "user lastname",
         "password": "valid_password",
