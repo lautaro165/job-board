@@ -23,7 +23,7 @@ def test_register_user(case, existing_test_user):
     
     response = client.post(reverse("register_user"), data=case)
 
-    assert response.status_code == expected_status_code, f"The gotten status code {response.status_code} does not match with the expected one: {expected_status_code}"
+    assert response.status_code == expected_status_code, f"The returned status code {response.status_code} does not match the expected one ({expected_status_code})."
 
     if response.status_code == 201:
 

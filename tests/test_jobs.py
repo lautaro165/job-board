@@ -6,6 +6,8 @@ from django.urls import reverse
 
 from jobs.models import JobPost
 
+from debug import print_debug_message
+
 # VIEWS TESTS
 
 @pytest.mark.django_db
@@ -22,9 +24,6 @@ def test_post_job(user_tokens):
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {user_tokens["access"]}")
     response = client.post(reverse("post_job"),data=data)
 
-    print("status_code".upper())
-    print(response.status_code)
-
     assert response.status_code == 201
 
 @pytest.mark.django_db
@@ -40,7 +39,7 @@ def test_edit_job_post(job, user_tokens):
     
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
     
-    response = client.put(reverse("edit_job_post", kwargs={"job_id":job.id}),data=updated_data)
+    response = client.put(reverse("edit_job_post", kwargs={"pk":job.id}),data=updated_data)
     
     job_instance = JobPost.objects.get(id=job.id)
 
@@ -55,7 +54,7 @@ def test_delete_job_post_owner_can_delete(user, job):
 
     client.force_authenticate(user=user)
 
-    response = client.delete(reverse("delete_job_post", kwargs={"job_id":job.id}))
+    response = client.delete(reverse("delete_job_post", kwargs={"pk":job.id}))
 
     assert response.status_code == 204
     assert JobPost.objects.count() == 0
@@ -68,7 +67,7 @@ def test_delete_job_post_other_user_forbidden(user, user_2, job):
     client.force_authenticate(user=user_2)
 
     url = f"/api/jobs/{job.id}/delete/"
-    response = client.delete(reverse("delete_job_post", kwargs={"job_id":job.id}))
+    response = client.delete(reverse("delete_job_post", kwargs={"pk":job.id}))
 
     assert response.status_code == 403
     assert JobPost.objects.count() == 1
@@ -80,6 +79,6 @@ def test_delete_job_post_not_found(user, job):
     
     client.force_authenticate(user=user)
 
-    response = client.delete((reverse("delete_job_post", kwargs={"job_id":81684})))
+    response = client.delete((reverse("delete_job_post", kwargs={"pk":81684})))
 
     assert response.status_code == 404
