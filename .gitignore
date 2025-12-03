@@ -9,5 +9,4 @@ __pycache__/
 .idea/
 
 .env
-env/
 .vscode
