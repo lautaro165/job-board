@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -16,7 +18,7 @@ class ApplyToJobView(generics.CreateAPIView):
 
     def get_job(self):
         job_id = self.kwargs.get("job_id")
-        return JobPost.objects.get(id=job_id)
+        return get_object_or_404(JobPost, id=job_id)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
