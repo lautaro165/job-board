@@ -35,7 +35,7 @@ class ApplyToJobView(generics.CreateAPIView):
 
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
-def responde_to_application(request, application_id):
+def respond_to_application(request, application_id):
     try:
         application = Application.objects.get(id=application_id)
     except Application.DoesNotExist:
