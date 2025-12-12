@@ -54,7 +54,7 @@ def test_apply_to_nonexistent_job(user_2):
     assert response.status_code == 404
 
 @pytest.mark.django_db
-def test_responde_to_application(user, application):
+def test_respond_to_application(user, application):
     client = APIClient()
     client.force_authenticate(user=user)
 
