@@ -8,7 +8,7 @@ from rest_framework import status, generics
 
 from jobs.models import JobPost
 from .models import Application
-from .serializers import ApplicationSerializer, ApplicationResponseSerializer
+from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
 
 # Create your views here.
 
@@ -33,36 +33,44 @@ class ApplyToJobView(generics.CreateAPIView):
         serializer.save(applicant=self.request.user, job=job)
 
 
-@api_view(["PATCH"])
-@permission_classes([IsAuthenticated])
-def respond_to_application(request, application_id):
-    try:
-        application = Application.objects.get(id=application_id)
-    except Application.DoesNotExist:
-        return Response({"error": f"There is no application with id {application_id}"},status=status.HTTP_404_NOT_FOUND)
+class RespondToApplicationView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["patch"]
 
-    if request.user != application.job.owner:
-        return Response({"error":"You can't access to handle this application"}, status=status.HTTP_403_FORBIDDEN)
-    
-    status_value = request.data.get("status")
-    message = request.data.get("message")
+    def get_object(self):
+        application_id = self.kwargs["application_id"]
+        return get_object_or_404(Application, id=application_id)
 
-    if not status_value in ["accepted", "rejected", "reviewed"]:
-        return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        application = self.get_object()
 
-    response_serializer = ApplicationResponseSerializer(data={
-        "application":application.id,
-        "responder":request.user.id,
-        "message":message
-    })
+        if request.user != application.job.owner:
+            return Response(
+                {"error": "You can't access to handle this application"},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
-    application.status = status_value
-    application.save()
+        serializer = ApplicationStatusUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    if response_serializer.is_valid():
-        response_serializer.save()
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
-    return Response(response_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        status_value = serializer.validated_data.get("status", None)
+        message = serializer.validated_data.get("message", None)
+
+        application.status = status_value
+        application.save()
+
+        response_serializer = ApplicationResponseSerializer(data={
+            "application": application.id,
+            "responder": request.user.id,
+            "message": message,
+        })
+        response_serializer.is_valid(raise_exception=True)
+        response = response_serializer.save()
+
+        return Response(
+            ApplicationResponseSerializer(response).data,
+            status=status.HTTP_200_OK
+        )
 
 
 @api_view(["DELETE"])
