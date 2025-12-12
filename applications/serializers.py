@@ -16,4 +16,4 @@ class ApplicationResponseSerializer(ModelSerializer):
 
 class ApplicationStatusUpdateSerializer(Serializer):
     status = ChoiceField(choices=["accepted", "rejected", "reviewed"])
-    message = CharField()
+    message = CharField(required=False, allow_blank=True)
