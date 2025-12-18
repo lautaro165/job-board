@@ -8,6 +8,7 @@ from rest_framework.validators import ValidationError
 from rest_framework import status, generics
 
 from jobs.models import JobPost
+from jobs.permissions import IsJobOwner
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
 
@@ -91,18 +92,10 @@ class UserApplicationsListView(generics.ListAPIView):
     def get_queryset(self):
         return Application.objects.filter(applicant=self.request.user)
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_job_applications(request, job_id):
-    try:
-        job = JobPost.objects.get(id=job_id)
-    except JobPost.DoesNotExist:
-        return Response({"error":f"No job found with id {job_id}"}, status=status.HTTP_404_NOT_FOUND)
-    
-    if job.owner != request.user:
-        return Response({"error":"You can't access to this job's applications"},status=status.HTTP_403_FORBIDDEN)
+class JobApplicationsListView(generics.ListAPIView):
+    serializer_class = ApplicationSerializer
+    permission_classes = [IsAuthenticated, IsJobOwner]
 
-    applications = Application.objects.filter(job=job)
-    serializer = ApplicationSerializer(applications, many=True)
-
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        job_id = self.kwargs["job_id"]
+        return Application.objects.filter(job_id=job_id)
