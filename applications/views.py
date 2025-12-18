@@ -84,13 +84,12 @@ class WithdrawApplicationView(generics.DestroyAPIView):
             raise PermissionDenied("You cannot withdraw an application that is not yours")
         instance.delete()
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_user_applications(request):
-    applications = Application.objects.filter(applicant=request.user)
-    serializer = ApplicationSerializer(applications, many=True)
+class UserApplicationsListView(generics.ListAPIView):
+    serializer_class = ApplicationSerializer
+    permission_classes = [IsAuthenticated]
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return Application.objects.filter(applicant=self.request.user)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
