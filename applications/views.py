@@ -84,7 +84,7 @@ def withdraw_application(request, application_id):
             status=status.HTTP_404_NOT_FOUND
         )
 
-    if application.user != request.user:
+    if application.applicant != request.user:
         return Response(
             {"error": "You cannot withdraw an application that is not yours"},
             status=status.HTTP_403_FORBIDDEN
