@@ -2,6 +2,8 @@ from applications.exceptions import ForbiddenApplicationStatusUpdate
 from applications.models import Application, ApplicationResponse
 from rest_framework.exceptions import ValidationError
 
+VALID_STATUSES = ["accepted", "rejected", "reviewed"]
+
 def apply_to_job_service(user, job):
     if Application.objects.filter(applicant=user).exists():
         raise ValidationError("You already applied this job")
@@ -19,6 +21,9 @@ def respond_to_application_service(
 ):
     if application.job.owner != responder:
         raise ForbiddenApplicationStatusUpdate()
+
+    if status not in VALID_STATUSES:
+        raise ValueError("Invalid status")
 
     application.status = status
     application.save()

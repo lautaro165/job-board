@@ -71,6 +71,8 @@ class RespondToApplicationView(generics.UpdateAPIView):
                 {"error": "You can't access to handle this application"},
                 status=status.HTTP_403_FORBIDDEN
             )
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             ApplicationResponseSerializer(response).data,
