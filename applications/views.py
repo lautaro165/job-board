@@ -11,6 +11,8 @@ from jobs.models import JobPost
 from jobs.permissions import IsJobOwner
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
+from .services import apply_to_job
+
 
 # Create your views here.
 
@@ -30,9 +32,12 @@ class ApplyToJobView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         job = self.get_job()
-        if Application.objects.filter(applicant=self.request.user, job=job).exists():
-            raise ValidationError("You have already applied to this job.")
-        serializer.save(applicant=self.request.user, job=job)
+        application = apply_to_job(
+            user=self.request.user,
+            job=job,
+        )
+
+        serializer.instance = application
 
 
 class RespondToApplicationView(generics.UpdateAPIView):
