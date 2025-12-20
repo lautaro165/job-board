@@ -9,9 +9,10 @@ from rest_framework import status, generics
 
 from jobs.models import JobPost
 from jobs.permissions import IsJobOwner
+from .exceptions import ForbiddenApplicationStatusUpdate
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
-from .services import apply_to_job
+from .services import apply_to_job_service, respond_to_application_service
 
 
 # Create your views here.
@@ -32,7 +33,7 @@ class ApplyToJobView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         job = self.get_job()
-        application = apply_to_job(
+        application = apply_to_job_service(
             user=self.request.user,
             job=job,
         )
@@ -45,41 +46,36 @@ class RespondToApplicationView(generics.UpdateAPIView):
     http_method_names = ["patch"]
 
     def get_object(self):
-        application_id = self.kwargs["application_id"]
-        return get_object_or_404(Application, id=application_id)
+        return get_object_or_404(
+            Application,
+            id=self.kwargs["application_id"]
+        )
 
     def update(self, request, *args, **kwargs):
         application = self.get_object()
 
-        if request.user != application.job.owner:
+        input_serializer = ApplicationStatusUpdateSerializer(
+            data=request.data
+        )
+        input_serializer.is_valid(raise_exception=True)
+
+        try:
+            response = respond_to_application_service(
+                application=application,
+                responder=request.user,
+                status=input_serializer.validated_data["status"],
+                message=input_serializer.validated_data.get("message"),
+            )
+        except ForbiddenApplicationStatusUpdate:
             return Response(
                 {"error": "You can't access to handle this application"},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        serializer = ApplicationStatusUpdateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        status_value = serializer.validated_data.get("status", None)
-        message = serializer.validated_data.get("message", None)
-
-        application.status = status_value
-        application.save()
-
-        response_serializer = ApplicationResponseSerializer(data={
-            "application": application.id,
-            "responder": request.user.id,
-            "message": message,
-        })
-        response_serializer.is_valid(raise_exception=True)
-        response = response_serializer.save()
-
         return Response(
             ApplicationResponseSerializer(response).data,
             status=status.HTTP_200_OK
         )
-
-
 class WithdrawApplicationView(generics.DestroyAPIView):
     queryset = Application.objects.all()
     permission_classes = [IsAuthenticated]
