@@ -12,7 +12,7 @@ from jobs.permissions import IsJobOwner
 from .exceptions import ForbiddenApplicationStatusUpdate
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
-from .services import apply_to_job_service, respond_to_application_service
+from .services import apply_to_job_service, respond_to_application_service, withdraw_application_service
 
 
 # Create your views here.
@@ -84,9 +84,7 @@ class WithdrawApplicationView(generics.DestroyAPIView):
     lookup_url_kwarg = "application_id"
 
     def perform_destroy(self, instance):
-        if instance.applicant != self.request.user:
-            raise PermissionDenied("You cannot withdraw an application that is not yours")
-        instance.delete()
+        withdraw_application_service(user=self.request.user, instance=instance)
 
 class UserApplicationsListView(generics.ListAPIView):
     serializer_class = ApplicationSerializer
