@@ -45,9 +45,3 @@ class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return Response({"error": "You cannot delete this job post"}, status=403)
 
         return super().destroy(request, *args, **kwargs)
-
-    def perform_update(self, serializer):
-        serializer.save()
-
-    def perform_destroy(self, instance):
-        instance.delete()
