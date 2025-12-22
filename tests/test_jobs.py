@@ -48,6 +48,19 @@ def test_post_job(user_tokens):
 
     assert response.status_code == 201
 
+@pytest.mark.django_db
+def test_get_job_details(user, job):
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    url = reverse("get_job_details", kwargs={"job_id":job.id})
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert JobPost.objects.count() == 1
+    assert JobPost.objects.get(id=job.id).title == response.data["title"]
+    assert JobPost.objects.get(id=job.id).description == response.data["description"]
 
 #PUT/PATCH TESTS
 @pytest.mark.django_db
