@@ -5,6 +5,8 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 from applications.models import Application
+from debug import print_debug_message
+
 
 @pytest.mark.django_db
 def test_apply_to_job_authenticated(user_2, job):
@@ -70,3 +72,20 @@ def test_respond_to_application(user, application):
 
     assert response.status_code == 200
     assert application.status == "rejected"
+
+@pytest.mark.django_db
+def test_withdraw_application(user_2, testing_withdraw_application):
+    client = APIClient()
+    client.force_authenticate(user=user_2)
+
+    assert testing_withdraw_application.status == "pending"
+
+    url = reverse("withdraw_application", kwargs={"application_id": testing_withdraw_application.id})
+
+    response = client.patch(url, format="json")
+
+    testing_withdraw_application.refresh_from_db()
+
+    assert "status" in response.data and response.data["status"] == "withdrawn"
+    assert testing_withdraw_application.status == "withdrawn"
+    assert response.status_code == 200
