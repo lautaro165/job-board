@@ -45,3 +45,13 @@ class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return Response({"error": "You cannot delete this job post"}, status=403)
 
         return super().destroy(request, *args, **kwargs)
+
+class JobPostRetrieveView(generics.RetrieveAPIView):
+    queryset = JobPost.objects.all()
+    serializer_class = JobPostSerializer
+    permission_classes = [IsAuthenticated, IsJobOwner]
+    lookup_field = "id"
+    lookup_url_kwarg = "job_id"
+
+    def get_queryset(self):
+        return JobPost.objects.filter(id=self.kwargs["job_id"])
