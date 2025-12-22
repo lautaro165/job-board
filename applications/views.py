@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from rest_framework import status, generics
 
+from debug import print_debug_message
 from jobs.models import JobPost
 from jobs.permissions import IsJobOwner
 from .exceptions import ForbiddenApplicationStatusUpdate
@@ -78,13 +79,26 @@ class RespondToApplicationView(generics.UpdateAPIView):
             ApplicationResponseSerializer(response).data,
             status=status.HTTP_200_OK
         )
-class WithdrawApplicationView(generics.DestroyAPIView):
-    queryset = Application.objects.all()
+class WithdrawApplicationView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     lookup_url_kwarg = "application_id"
+    lookup_field = "id"
+    http_method_names = ["patch"]
 
-    def perform_destroy(self, instance):
-        withdraw_application_service(user=self.request.user, instance=instance)
+    def get_queryset(self):
+        return Application.objects.filter(applicant=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        application = self.get_object()
+
+        updated_application = withdraw_application_service(
+            user=request.user,
+            application=application
+        )
+
+        return Response({
+            "status": updated_application.status,
+        })
 
 class UserApplicationsListView(generics.ListAPIView):
     serializer_class = ApplicationSerializer

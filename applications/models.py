@@ -16,6 +16,7 @@ class Application(models.Model):
             ("reviewed", "Reviewed"),
             ("accepted", "Accepted"),
             ("rejected", "Rejected"),
+            ("withdrawn", "Withdrawn"),
         ],
         default="pending"
     )
