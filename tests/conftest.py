@@ -29,6 +29,10 @@ def application(user, job):
     return Application.objects.create(applicant=user, job=job)
 
 @pytest.fixture
+def testing_withdraw_application(user_2, job):
+    return Application.objects.create(applicant=user_2, job=job)
+
+@pytest.fixture
 def user_tokens(user):
     refresh = RefreshToken.for_user(user)
     access = refresh.access_token
