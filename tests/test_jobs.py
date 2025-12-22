@@ -22,7 +22,14 @@ def test_unauthenticated_user_can_list(user, job):
     assert response.status_code == 200
 
 @pytest.mark.django_db
-def
+def test_unauthenticated_user_cannot_post():
+    client = APIClient()
+
+    url = reverse("post_job")
+    response = client.post(url)
+
+    assert response.status_code == 401
+    assert JobPost.objects.count() == 0
 
 #POST TESTS
 @pytest.mark.django_db
