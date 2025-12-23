@@ -49,9 +49,12 @@ class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 class JobPostRetrieveView(generics.RetrieveAPIView):
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
-    permission_classes = [IsAuthenticated, IsJobOwner]
+    permission_classes = [IsAuthenticated]
     lookup_field = "id"
     lookup_url_kwarg = "job_id"
 
     def get_queryset(self):
-        return JobPost.objects.filter(id=self.kwargs["job_id"])
+        return JobPost.objects.filter(
+            id=self.kwargs["job_id"],
+            owner=self.request.user
+        )
