@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, Serializer, CharField, ChoiceField
 
-from .models import Application, ApplicationResponse
+from .models import Application, ApplicationResponse, ApplicationStatus
 
 
 class ApplicationSerializer(ModelSerializer):
@@ -15,5 +15,5 @@ class ApplicationResponseSerializer(ModelSerializer):
         fields = ["application", "responder", "message", "created_at"]
 
 class ApplicationStatusUpdateSerializer(Serializer):
-    status = ChoiceField(choices=["accepted", "rejected", "reviewed"])
+    status = ChoiceField(choices=ApplicationStatus.choices)
     message = CharField(required=False, allow_blank=True)
