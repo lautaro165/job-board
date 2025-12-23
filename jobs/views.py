@@ -26,25 +26,11 @@ class GetOwnerJobPostListView(generics.ListAPIView):
 class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsJobOwner]
 
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-
-        if instance.owner != request.user:
-            return Response({"error": "You cannot edit this job post"}, status=status.HTTP_403_FORBIDDEN)
-
         kwargs["partial"] = True
-
         return super().update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-
-        if instance.owner != request.user:
-            return Response({"error": "You cannot delete this job post"}, status=403)
-
-        return super().destroy(request, *args, **kwargs)
 
 class JobPostRetrieveView(generics.RetrieveAPIView):
     queryset = JobPost.objects.all()
