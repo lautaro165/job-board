@@ -4,6 +4,12 @@ from jobs.models import JobPost
 
 # Create your models here.
 
+class ApplicationStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    REVIEWED = "reviewed", "Reviewed"
+    ACCEPTED = "accepted", "Accepted"
+    REJECTED = "rejected", "Rejected"
+
 class Application(models.Model):
     applicant = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     job = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name="applications")
@@ -11,14 +17,8 @@ class Application(models.Model):
     resume = models.FileField(upload_to="resumes/", blank=True, null=True)
     status = models.CharField(
         max_length=20,
-        choices=[
-            ("pending", "Pending"),
-            ("reviewed", "Reviewed"),
-            ("accepted", "Accepted"),
-            ("rejected", "Rejected"),
-            ("withdrawn", "Withdrawn"),
-        ],
-        default="pending"
+        choices=ApplicationStatus.choices,
+        default=ApplicationStatus.PENDING
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
