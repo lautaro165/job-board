@@ -22,14 +22,13 @@ def test_unauthenticated_user_can_list(user, job):
     assert response.status_code == 200
 
 @pytest.mark.django_db
-def test_unauthenticated_user_cannot_post():
+def test_forbidden_get_job_post_details(user_2, job):
     client = APIClient()
+    client.force_authenticate(user=user_2)
 
-    url = reverse("post_job")
-    response = client.post(url)
+    response = client.get(reverse("get_job_details", kwargs={"job_id": job.id}))
 
-    assert response.status_code == 401
-    assert JobPost.objects.count() == 0
+    assert response.status_code == 404
 
 #POST TESTS
 @pytest.mark.django_db
@@ -61,6 +60,16 @@ def test_get_job_details(user, job):
     assert JobPost.objects.count() == 1
     assert JobPost.objects.get(id=job.id).title == response.data["title"]
     assert JobPost.objects.get(id=job.id).description == response.data["description"]
+
+@pytest.mark.django_db
+def test_unauthenticated_user_cannot_post():
+    client = APIClient()
+
+    url = reverse("post_job")
+    response = client.post(url)
+
+    assert response.status_code == 401
+    assert JobPost.objects.count() == 0
 
 #PUT/PATCH TESTS
 @pytest.mark.django_db
