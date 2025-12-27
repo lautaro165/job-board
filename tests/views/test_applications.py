@@ -89,3 +89,14 @@ def test_withdraw_application(user_2, testing_withdraw_application):
     assert "status" in response.data and response.data["status"] == "withdrawn"
     assert testing_withdraw_application.status == "withdrawn"
     assert response.status_code == 200
+
+@pytest.mark.django_db
+def test_apply_to_own_job(user, job):
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    url = reverse("apply_to_job", kwargs={"job_id": job.id})
+
+    response = client.post(url)
+
+    assert response.status_code == 400
