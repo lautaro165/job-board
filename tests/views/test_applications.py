@@ -43,6 +43,7 @@ def test_apply_twice_to_same_job(user_2, job):
     
     response2 = client.post(url, {"cover_letter": "Second apply"}, format="json")
     assert response2.status_code == 400
+    assert response2.data["detail"] == "You already applied this job"
 
 
 @pytest.mark.django_db
@@ -100,3 +101,4 @@ def test_apply_to_own_job(user, job):
     response = client.post(url)
 
     assert response.status_code == 400
+    assert response.data["detail"] == "You cannot apply your own job"

@@ -1,4 +1,4 @@
-from applications.exceptions import ForbiddenApplicationStatusUpdate
+from applications.exceptions import ForbiddenApplicationStatusUpdate, TryingToApplyToOwnJob, ApplicationAlreadyExists
 from applications.models import Application, ApplicationResponse
 
 from rest_framework.exceptions import ValidationError, PermissionDenied
@@ -13,10 +13,10 @@ def apply_to_job_service(user, job):
         raise ValidationError("User and job are required")
 
     if Application.objects.filter(applicant=user, job=job).exists():
-        raise ValidationError("You already applied this job")
+        raise ApplicationAlreadyExists("You already applied this job")
 
     if user == job.owner:
-        raise ValidationError("You cannot apply your own job")
+        raise TryingToApplyToOwnJob("You cannot apply your own job")
 
     return Application.objects.create(
         applicant=user,
