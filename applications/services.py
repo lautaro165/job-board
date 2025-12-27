@@ -11,6 +11,9 @@ def apply_to_job_service(user, job):
     if Application.objects.filter(applicant=user).exists():
         raise ValidationError("You already applied this job")
 
+    if user == job.owner:
+        raise ValidationError("You cannot apply your own job")
+
     return Application.objects.create(
         applicant=user,
         job=job,
