@@ -2,6 +2,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework import generics, status
 from rest_framework.response import Response
 
+from .filters import JobPostFilter
 from .models import JobPost
 from .permissions import IsJobOwner
 from .serializers import JobPostSerializer
@@ -12,6 +13,10 @@ class JobPostListCreateView(generics.ListCreateAPIView):
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    filterset_class = JobPostFilter
+    ordering_fields = ["posted_at", "salary"]
+    ordering = ["-posted_at"]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
