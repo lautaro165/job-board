@@ -29,7 +29,9 @@ INSTALLED_APPS = [
     'applications',
     'companies',
     'jobs',
-    'users'
+    'users',
+
+    'core',
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
@@ -124,6 +126,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
 }
 
 SIMPLE_JWT = {
