@@ -6,8 +6,6 @@ from django.urls import reverse
 
 from jobs.models import JobPost
 
-from debug import print_debug_message
-
 # VIEWS TESTS
 
 #GET TESTS
