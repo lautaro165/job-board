@@ -1,9 +1,8 @@
-from applications.exceptions import ForbiddenApplicationStatusUpdate, TryingToApplyToOwnJob, ApplicationAlreadyExists
+from applications.exceptions import ForbiddenApplicationStatusUpdate, TryingToApplyToOwnJob, ApplicationAlreadyExists, \
+    InvalidUpdateStatus
 from applications.models import Application, ApplicationResponse
 
 from rest_framework.exceptions import ValidationError, PermissionDenied
-
-from debug import print_debug_message
 
 VALID_RESPONSE_STATUSES = ["accepted", "rejected", "reviewed"]
 
@@ -33,7 +32,7 @@ def respond_to_application_service(
         raise ForbiddenApplicationStatusUpdate()
 
     if status not in VALID_RESPONSE_STATUSES:
-        raise ValueError("Invalid status")
+        raise InvalidUpdateStatus()
 
     application.status = status
     application.save()
