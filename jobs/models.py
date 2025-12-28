@@ -31,17 +31,12 @@ class JobPost(models.Model):
         default=FULL_TIME
     )
     
-    min_wage = models.IntegerField()
-    max_wage = models.IntegerField()
+    salary = models.PositiveIntegerField(null=True, blank=True)
 
     posted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     applicants = models.ManyToManyField(CustomUser, through="applications.Application", related_name="applied_jobs")
-
-    def clean(self):
-        if self.min_wage > self.max_wage:
-            raise ValidationError("Minium wage cannot be lower than max wage")
 
     def __str__(self):
         return f"{self.title} - {self.company or self.owner.username}"
