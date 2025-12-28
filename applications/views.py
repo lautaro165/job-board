@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from rest_framework import status, generics
 
-from debug import print_debug_message
 from jobs.models import JobPost
 from jobs.permissions import IsJobOwner
 from .exceptions import ForbiddenApplicationStatusUpdate
@@ -60,20 +59,12 @@ class RespondToApplicationView(generics.UpdateAPIView):
         )
         input_serializer.is_valid(raise_exception=True)
 
-        try:
-            response = respond_to_application_service(
-                application=application,
-                responder=request.user,
-                status=input_serializer.validated_data["status"],
-                message=input_serializer.validated_data.get("message"),
-            )
-        except ForbiddenApplicationStatusUpdate:
-            return Response(
-                {"error": "You can't access to handle this application"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        except ValueError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        response = respond_to_application_service(
+            application=application,
+            responder=request.user,
+            status=input_serializer.validated_data["status"],
+            message=input_serializer.validated_data.get("message"),
+        )
 
         return Response(
             ApplicationResponseSerializer(response).data,
