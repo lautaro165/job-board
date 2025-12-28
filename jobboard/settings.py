@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'users',
 
     'core',
+    'django_filters',
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
@@ -126,8 +127,15 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
+    'DEFAULT_FILTER_BACKENDS': [
+            'django_filters.rest_framework.DjangoFilterBackend',
+            'rest_framework.filters.SearchFilter',
+            'rest_framework.filters.OrderingFilter',
+    ],
 }
+
+if not DEBUG:
+    REST_FRAMEWORK["EXCEPTION_HANDLER"] = "core.exceptions.custom_exception_handler"
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
