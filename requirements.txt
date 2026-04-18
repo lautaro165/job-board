@@ -4,7 +4,7 @@ django-filter==25.2
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 iniconfig==2.1.0
-mysqlclient==2.2.7
+mysqlclient==2.2.8
 packaging==25.0
 pillow==11.3.0
 pluggy==1.6.0
