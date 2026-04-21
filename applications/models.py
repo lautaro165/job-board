@@ -7,6 +7,7 @@ from jobs.models import JobPost
 class ApplicationStatus(models.TextChoices):
     PENDING = "pending", "Pending"
     REVIEWED = "reviewed", "Reviewed"
+    WITHDRAWN = "withdrawn", "Withdrawn"
     ACCEPTED = "accepted", "Accepted"
     REJECTED = "rejected", "Rejected"
 
