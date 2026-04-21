@@ -8,11 +8,11 @@ from rest_framework.validators import ValidationError
 from rest_framework import status, generics
 
 from jobs.models import JobPost
-from jobs.permissions import IsJobOwner
 from .exceptions import ForbiddenApplicationStatusUpdate
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
 from .services import apply_to_job_service, respond_to_application_service, withdraw_application_service
+from .permissions import IsJobOwner
 
 
 # Create your views here.
@@ -42,8 +42,9 @@ class ApplyToJobView(generics.CreateAPIView):
 
 
 class RespondToApplicationView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsJobOwner]
     http_method_names = ["patch"]
+    serializer_class = ApplicationStatusUpdateSerializer
 
     def get_object(self):
         return get_object_or_404(
@@ -51,25 +52,22 @@ class RespondToApplicationView(generics.UpdateAPIView):
             id=self.kwargs["application_id"]
         )
 
-    def update(self, request, *args, **kwargs):
+    def perform_update(self, serializer):
         application = self.get_object()
-
-        input_serializer = ApplicationStatusUpdateSerializer(
-            data=request.data
-        )
-        input_serializer.is_valid(raise_exception=True)
-
-        response = respond_to_application_service(
+        self.response = respond_to_application_service(
             application=application,
-            responder=request.user,
-            status=input_serializer.validated_data["status"],
-            message=input_serializer.validated_data.get("message"),
+            responder=self.request.user,
+            status=serializer.validated_data["status"],
+            message=serializer.validated_data.get("message"),
         )
 
+    def update(self, request, *args, **kwargs):
+        super().update(request, *args, **kwargs)
         return Response(
-            ApplicationResponseSerializer(response).data,
+            ApplicationResponseSerializer(self.response).data,
             status=status.HTTP_200_OK
         )
+    
 class WithdrawApplicationView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     lookup_url_kwarg = "application_id"
