@@ -12,7 +12,7 @@ from .exceptions import ForbiddenApplicationStatusUpdate
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
 from .services import apply_to_job_service, respond_to_application_service, withdraw_application_service
-from .permissions import IsJobOwner
+from .permissions import IsJobOwner, IsApplicationOwnerOrJobOwner
 
 
 # Create your views here.
@@ -40,6 +40,15 @@ class ApplyToJobView(generics.CreateAPIView):
 
         serializer.instance = application
 
+class ApplicationDetailView(generics.RetrieveAPIView):
+    serializer_class = ApplicationSerializer
+    permission_classes = [IsAuthenticated, IsApplicationOwnerOrJobOwner]
+
+    def get_object(self):
+        return get_object_or_404(
+            Application,
+            id=self.kwargs["application_id"]
+        )
 
 class RespondToApplicationView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsJobOwner]
