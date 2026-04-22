@@ -138,8 +138,8 @@ if not DEBUG:
     REST_FRAMEWORK["EXCEPTION_HANDLER"] = "core.exceptions.custom_exception_handler"
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(config("ACCESS_TOKEN_LIFETIME"))),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(config("REFRESH_TOKEN_LIFETIME"))),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(config("ACCESS_TOKEN_LIFETIME", default=60))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(config("REFRESH_TOKEN_LIFETIME", default=7))),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
