@@ -31,15 +31,6 @@ class ApplyToJobView(generics.CreateAPIView):
         context["job"] = self.get_job()
         return context
 
-    def perform_create(self, serializer):
-        job = self.get_job()
-        application = apply_to_job_service(
-            user=self.request.user,
-            job=job,
-        )
-
-        serializer.instance = application
-
 class ApplicationDetailView(generics.RetrieveAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated, IsApplicationOwnerOrJobOwner]
