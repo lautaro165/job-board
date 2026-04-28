@@ -8,9 +8,6 @@ VALID_RESPONSE_STATUSES = ["accepted", "rejected", "reviewed"]
 
 def apply_to_job_service(user, job):
 
-    if not (user and job):
-        raise ValidationError("User and job are required")
-
     if Application.objects.filter(applicant=user, job=job).exists():
         raise ApplicationAlreadyExists("You already applied this job")
 
