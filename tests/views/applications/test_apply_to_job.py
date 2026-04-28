@@ -6,7 +6,7 @@ from applications.models import Application
 
 @pytest.mark.django_db
 def test_apply_to_job_authenticated(user_2, job):
-    """Test: Usuario autenticado puede aplicar a un job exitosamente"""
+    
     client = APIClient()
     client.force_authenticate(user=user_2)
     url = reverse("apply_to_job", kwargs={"job_id": job.id})
@@ -18,7 +18,7 @@ def test_apply_to_job_authenticated(user_2, job):
 
 @pytest.mark.django_db
 def test_apply_to_job_unauthenticated(user_2, job):
-    """Test: Usuario no autenticado no puede aplicar"""
+    
     client = APIClient()
     url = reverse("apply_to_job", kwargs={"job_id": job.id})
 
@@ -28,7 +28,7 @@ def test_apply_to_job_unauthenticated(user_2, job):
 
 @pytest.mark.django_db
 def test_apply_twice_to_same_job(user_2, job):
-    """Test: No se puede aplicar dos veces al mismo job"""
+    
     client = APIClient()
     client.force_authenticate(user=user_2)
     url = reverse("apply_to_job", kwargs={"job_id": job.id})
@@ -42,7 +42,7 @@ def test_apply_twice_to_same_job(user_2, job):
 
 @pytest.mark.django_db
 def test_apply_to_nonexistent_job(user_2):
-    """Test: No se puede aplicar a un job que no existe"""
+    
     client = APIClient()
     client.force_authenticate(user=user_2)
     url = reverse("apply_to_job", kwargs={"job_id": 432})
