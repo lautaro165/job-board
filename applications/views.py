@@ -35,11 +35,9 @@ class ApplicationDetailView(generics.RetrieveAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated, IsApplicationOwnerOrJobOwner]
 
-    def get_object(self):
-        return get_object_or_404(
-            Application,
-            id=self.kwargs["application_id"]
-        )
+    queryset = Application.objects.all()
+    lookup_field = "id"
+    lookup_url_kwarg = "application_id"
 
 class RespondToApplicationView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsJobOwner]
