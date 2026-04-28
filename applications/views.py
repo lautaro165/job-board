@@ -61,19 +61,22 @@ class RespondToApplicationView(generics.UpdateAPIView):
             id=self.kwargs["application_id"]
         )
 
-    def perform_update(self, serializer):
+    def update(self, request, *args, **kwargs):
+        
         application = self.get_object()
-        self.response = respond_to_application_service(
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        response = respond_to_application_service(
             application=application,
-            responder=self.request.user,
+            responder=request.user,
             status=serializer.validated_data["status"],
             message=serializer.validated_data.get("message"),
         )
-
-    def update(self, request, *args, **kwargs):
-        super().update(request, *args, **kwargs)
+        
         return Response(
-            ApplicationResponseSerializer(self.response).data,
+            ApplicationResponseSerializer(response).data,
             status=status.HTTP_200_OK
         )
     
