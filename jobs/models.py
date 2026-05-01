@@ -8,9 +8,9 @@ class JobPost(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     
-    company = models.ForeignKey("companies.Company",on_delete = models.CASCADE, related_name="Jobs", null=True, blank=True)
+    company = models.ForeignKey("companies.Company",on_delete = models.CASCADE, related_name="jobs", null=True, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     
     ACTIVE = 'AC'
