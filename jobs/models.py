@@ -13,6 +13,22 @@ class JobPost(models.Model):
     company = models.ForeignKey("companies.Company",on_delete = models.CASCADE, related_name="Jobs", null=True, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     
+    ACTIVE = 'AC'
+    CLOSED = 'CL'
+    PAUSED = 'PA'
+    
+    JOB_STATUSES = [
+        (ACTIVE, 'Active'),
+        (CLOSED, 'Closed'),
+        (PAUSED, 'Paused'),
+    ]
+    
+    status = models.CharField(
+        max_length=2,
+        choices=JOB_STATUSES,
+        default=ACTIVE
+    )
+    
     FULL_TIME = 'FT'
     PART_TIME = 'PT'
     REMOTE = 'RM'
