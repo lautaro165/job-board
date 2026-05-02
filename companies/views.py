@@ -1,9 +1,11 @@
 from rest_framework import generics
+from rest_framework.exceptions import PermissionDenied
 
 from django.db.models import Count
 
 from .serializers import PublicCompanySerializer
 from .models import Company
+from .services import update_company_service
 
 # Create your views here.
 
@@ -21,6 +23,11 @@ class CompanyRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     lookup_field = "id"
     lookup_url_kwarg = "company_id"
     
-    #REESCRIBIR PARA VALIDAR QUE EL DUEÑO SEA EL QUE MODIFICA LA INFO
     def perform_update(self, serializer):
-        return super().perform_update(serializer)
+        
+        company = self.get_object()
+        
+        if company.created_by != self.request.user:
+            raise PermissionDenied()
+        
+        return serializer.save()
