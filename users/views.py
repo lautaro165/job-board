@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 # from jobs.models import JobPost
 # from .models import Application
-from .serializers import LoginUserSerializer
+from .serializers import LoginUserSerializer, CustomUserRegistrationSerializer
 
 
 # Create your views here.
@@ -30,3 +30,24 @@ class LoginAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+class RegisterUserView(generics.CreateAPIView):
+    serializer_class = CustomUserRegistrationSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user = serializer.save()
+        
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            "message": "User registered successfully",
+            "user": serializer.data,
+            "tokens": {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+        }, status=status.HTTP_201_CREATED)
