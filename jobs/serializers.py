@@ -1,7 +1,11 @@
 from rest_framework.serializers import ModelSerializer
 from .models import JobPost
 
-class JobPostSerializer(ModelSerializer):
+class JobPostBaseSerializer(ModelSerializer):
     class Meta:
         model = JobPost
-        fields = ["id", "title", "description", "owner", "company", "salary", "posted_at"]
+        fields = "__all__"
+        
+class JobPostListSerializer(JobPostBaseSerializer):
+    class Meta(JobPostBaseSerializer.Meta):
+        pass

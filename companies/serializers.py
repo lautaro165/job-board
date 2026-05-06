@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Company
 
 
-class CompanySerializer(serializers.ModelSerializer):
+class CompanyBaseSerializer(serializers.ModelSerializer):
     followers_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -16,9 +16,10 @@ class CompanySerializer(serializers.ModelSerializer):
             "followers_count",
         ]
 
-class PublicCompanySerializer(CompanySerializer):
-    pass
+class PublicCompanySerializer(CompanyBaseSerializer):
+    class Meta(CompanyBaseSerializer.Meta):
+        pass
         
-class OwnerCompanySerializer(CompanySerializer):
-    class Meta(CompanySerializer.Meta):
-        fields = CompanySerializer.Meta.fields + ["created_at"]
+class OwnerCompanySerializer(CompanyBaseSerializer):
+    class Meta(CompanyBaseSerializer.Meta):
+        fields = CompanyBaseSerializer.Meta.fields + ["created_at"]
