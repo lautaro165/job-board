@@ -1,11 +1,11 @@
 from rest_framework.serializers import ModelSerializer
 from .models import JobPost
 
-class JobPostBaseSerializer(ModelSerializer):
+class _JobPostBaseSerializer(ModelSerializer):
     class Meta:
         model = JobPost
         fields = "__all__"
         
-class JobPostListSerializer(JobPostBaseSerializer):
-    class Meta(JobPostBaseSerializer.Meta):
+class JobPostListSerializer(_JobPostBaseSerializer):
+    class Meta(_JobPostBaseSerializer.Meta):
         pass
