@@ -2,10 +2,13 @@ from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 
 from django.db.models import Count
+from django.shortcuts import get_object_or_404
 
 from .serializers import PublicCompanySerializer
 from .models import Company
-from .services import update_company_service
+
+from jobs.serializers import JobPostListSerializer
+from jobs.models import JobPost
 
 # Create your views here.
 
@@ -31,3 +34,16 @@ class CompanyRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             raise PermissionDenied()
         
         return serializer.save()
+    
+class CompanyJobListView(generics.ListAPIView):
+    serializer_class = JobPostListSerializer
+    
+    def get_queryset(self):
+        company_id = self.kwargs.get("company_id")
+        
+        get_object_or_404(Company, id=company_id)
+        
+        return JobPost.objects.filter(
+            company_id=company_id, 
+            status=JobPost.ACTIVE
+        )
