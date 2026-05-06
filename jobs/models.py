@@ -2,6 +2,8 @@ from django.db import models
 from users.models import CustomUser
 from django.core.exceptions import ValidationError
 
+from companies.models import Company
+
 # Create your models here.
 
 class JobPost(models.Model):
@@ -10,7 +12,7 @@ class JobPost(models.Model):
     
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     
-    company = models.ForeignKey("companies.Company",on_delete = models.CASCADE, related_name="jobs", null=True, blank=True)
+    company = models.ForeignKey(Company,on_delete = models.CASCADE, related_name="jobs", null=True, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     
     ACTIVE = 'AC'

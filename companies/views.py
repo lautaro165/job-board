@@ -4,7 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 
-from .serializers import PublicCompanySerializer
+from .serializers import PublicCompanySerializer, OwnerCompanySerializer
 from .models import Company
 
 from jobs.serializers import JobPostListSerializer
@@ -46,4 +46,12 @@ class CompanyJobListView(generics.ListAPIView):
         return JobPost.objects.filter(
             company_id=company_id, 
             status=JobPost.ACTIVE
+        )
+        
+class UserCompanyListView(generics.ListAPIView):
+    serializer_class = OwnerCompanySerializer
+    
+    def get_queryset(self):
+        return Company.objects.filter(
+            owner=self.request.user
         )
