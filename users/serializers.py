@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from django.contrib.auth import authenticate, get_user_model
 
-User = get_user_model()
+from users.models import CustomUser
 
 class LoginUserSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -40,12 +40,25 @@ class CustomUserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']
+        model = CustomUser
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role']
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        user = User(**validated_data)
+        user = CustomUser(**validated_data)
         user.set_password(password)
         user.save()
         return user
+    
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
+
+    def save(self, **kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            raise serializers.ValidationError({'refresh': 'Invalid or expired token'})

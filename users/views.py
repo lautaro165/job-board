@@ -1,14 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenRefreshView
 
 # from jobs.models import JobPost
 # from .models import Application
-from .serializers import LoginUserSerializer, CustomUserRegistrationSerializer
+from .serializers import LoginUserSerializer, CustomUserRegistrationSerializer, LogoutSerializer
 
 
 # Create your views here.
@@ -51,3 +50,17 @@ class RegisterUserView(generics.CreateAPIView):
                 "access": str(refresh.access_token),
             }
         }, status=status.HTTP_201_CREATED)
+
+class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LogoutSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(
+            {"message": "Successfully logged out."}, 
+            status=status.HTTP_204_NO_CONTENT
+        )
