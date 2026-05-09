@@ -2,22 +2,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # from jobs.models import JobPost
 # from .models import Application
-from .serializers import LoginUserSerializer, CustomUserRegistrationSerializer, LogoutSerializer
-
+from .serializers import LoginUserSerializer, CustomUserRegistrationSerializer, LogoutSerializer, UserProfileInfoSerializer
+from .models import CustomUser
 
 # Create your views here.
-
-def get_user_tokens(user):
-    refresh_token = RefreshToken.for_user(user)
-    access_token = refresh_token.access_token
-    refresh_token_expires_time = int(refresh_token.lifetime.total_seconds())
-    access_token_expires_time = int(access_token.lifetime.total_seconds())
-    return refresh_token, access_token, refresh_token_expires_time, access_token_expires_time
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
@@ -64,3 +58,10 @@ class LogoutAPIView(APIView):
             {"message": "Successfully logged out."}, 
             status=status.HTTP_204_NO_CONTENT
         )
+
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileInfoSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        return self.request.user

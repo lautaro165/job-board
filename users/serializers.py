@@ -50,6 +50,19 @@ class CustomUserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+class UserProfileInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role"
+        ]
+        read_only_fields = ["email"]
+    
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
