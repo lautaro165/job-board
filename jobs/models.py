@@ -1,6 +1,5 @@
 from django.db import models
 from users.models import CustomUser
-from django.core.exceptions import ValidationError
 
 from companies.models import Company
 
@@ -51,6 +50,7 @@ class JobPost(models.Model):
     
     salary = models.PositiveIntegerField(null=True, blank=True)
 
+    posted_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     posted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

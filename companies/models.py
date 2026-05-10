@@ -9,10 +9,23 @@ class Company(models.Model):
     website = models.URLField(blank=True, null=True, unique=True)
     logo = models.ImageField(upload_to="company_logos/", blank=True, null=True)
     
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="companies", null=True)
-    
-    created_at = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.PROTECT, 
+        related_name="owned_companies"
+    )
 
+    admins = models.ManyToManyField(
+        CustomUser, 
+        related_name="managed_companies",
+        blank=True
+    )
+
+    def __str__(self):
+        return self.name
+    
+
+    created_at = models.DateTimeField(auto_now_add=True)
     followers = models.ManyToManyField(CustomUser,related_name="followed_companies",blank=True)
 
     def __str__(self):
