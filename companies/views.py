@@ -30,7 +30,7 @@ class CompanyRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         
         company = self.get_object()
         
-        if company.created_by != self.request.user:
+        if company.owner != self.request.user:
             raise PermissionDenied()
         
         return serializer.save()

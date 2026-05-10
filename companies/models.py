@@ -9,9 +9,9 @@ class Company(models.Model):
     website = models.URLField(blank=True, null=True, unique=True)
     logo = models.ImageField(upload_to="company_logos/", blank=True, null=True)
     
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="companies", null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="created_companies")
 
     followers = models.ManyToManyField(CustomUser,related_name="followed_companies",blank=True)
 
