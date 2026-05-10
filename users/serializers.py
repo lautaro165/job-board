@@ -37,14 +37,32 @@ class LoginUserSerializer(serializers.Serializer):
 
 
 class CustomUserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
+    password = serializers.CharField(write_only=True, min_length=8, required=True)
+    password2 = serializers.CharField(write_only=True, min_length=8, required=True)
     
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role']
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role', 'password', 'password2']
+        
+    def validate_email(self, value):
+        if CustomUser.objects.filter(email=value).exists():
+            raise ValidationError(f"{value} is already in use.")
+        
+        return value
+    
+    def validate(self, data):
+        password = data.get("password")
+        password2 = data.get("password2")
+        
+        if password != password2:
+            raise ValidationError("Provided password don't match")
+        
+        return data
 
     def create(self, validated_data):
         password = validated_data.pop('password')
+        validated_data.pop('password2')
+        
         user = CustomUser(**validated_data)
         user.set_password(password)
         user.save()
