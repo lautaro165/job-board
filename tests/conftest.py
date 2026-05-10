@@ -13,7 +13,7 @@ def user():
 
 @pytest.fixture
 def company(user):
-    return Company.objects.create(created_by=user, name="random_company")
+    return Company.objects.create(owner=user, name="random_company")
 
 @pytest.fixture
 def job(user,company):
