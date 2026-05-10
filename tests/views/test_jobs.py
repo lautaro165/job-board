@@ -99,9 +99,11 @@ def test_delete_job_post_owner_can_delete(user, job):
     client.force_authenticate(user=user)
 
     response = client.delete(reverse("delete_job_post", kwargs={"pk":job.id}))
+    
+    job.refresh_from_db()
 
     assert response.status_code == 204
-    assert JobPost.objects.count() == 0
+    assert job.status == JobPost.ARCHIVED
 
 
 @pytest.mark.django_db
@@ -110,11 +112,12 @@ def test_delete_job_post_other_user_forbidden(user, user_2, job):
     
     client.force_authenticate(user=user_2)
 
-    url = f"/api/jobs/{job.id}/delete/"
     response = client.delete(reverse("delete_job_post", kwargs={"pk":job.id}))
+    
+    job.refresh_from_db()
 
     assert response.status_code == 403
-    assert JobPost.objects.count() == 1
+    assert job.status != JobPost.ARCHIVED
 
 
 @pytest.mark.django_db
