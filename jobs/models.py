@@ -9,8 +9,6 @@ class JobPost(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    
     company = models.ForeignKey(Company,on_delete = models.CASCADE, related_name="jobs", null=True, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     
@@ -57,4 +55,4 @@ class JobPost(models.Model):
     applicants = models.ManyToManyField(CustomUser, through="applications.Application", related_name="applied_jobs")
 
     def __str__(self):
-        return f"{self.title} - {self.company or self.owner.username}"
+        return f"{self.title} - {self.company or self.posted_by.username}"
