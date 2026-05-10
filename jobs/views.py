@@ -18,14 +18,14 @@ class JobPostListCreateView(generics.ListCreateAPIView):
     ordering = ["-posted_at"]
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(posted_by=self.request.user)
 
 class GetOwnerJobPostListView(generics.ListAPIView):
     serializer_class = JobPostSerializer
     permission_classes = [IsAuthenticated, IsJobOwner]
 
     def get_queryset(self):
-        return JobPost.objects.filter(owner=self.request.user)
+        return JobPost.objects.filter(posted_by=self.request.user)
 
 class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = JobPost.objects.all()
@@ -46,5 +46,5 @@ class JobPostRetrieveView(generics.RetrieveAPIView):
     def get_queryset(self):
         return JobPost.objects.filter(
             id=self.kwargs["job_id"],
-            owner=self.request.user
+            posted_by=self.request.user
         )

@@ -11,7 +11,7 @@ def apply_to_job_service(user, job):
     if Application.objects.filter(applicant=user, job=job).exists():
         raise ApplicationAlreadyExists("You already applied this job")
 
-    if user == job.owner:
+    if user == job.posted_by:
         raise TryingToApplyToOwnJob("You cannot apply your own job")
 
     return Application.objects.create(
@@ -25,7 +25,7 @@ def respond_to_application_service(
     status,
     message=None
 ):
-    if application.job.owner != responder:
+    if application.job.posted_by != responder:
         raise ForbiddenApplicationStatusUpdate()
 
     if status not in VALID_RESPONSE_STATUSES:

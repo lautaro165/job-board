@@ -7,13 +7,13 @@ class JobPostSerializer(ModelSerializer):
     class Meta:
         model = JobPost
         fields = "__all__"
-        read_only_fields = ('owner',)
+        read_only_fields = ('posted_by','company')
     
     def validate_company(self, value):
         
         user = self.context['request'].user
         
-        is_owner = value.owner == user
+        is_owner = value.posted_by == user
         is_admin = value.admins.filter(id=user.id).exists()
 
         if not (is_owner or is_admin):
