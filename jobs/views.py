@@ -9,7 +9,7 @@ from .serializers import JobPostSerializer
 # Create your views here.
 
 class JobPostListCreateView(generics.ListCreateAPIView):
-    queryset = JobPost.objects.exclude(status=JobPost.ARCHIVED)
+    queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -25,7 +25,7 @@ class GetOwnerJobPostListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsJobOwner]
 
     def get_queryset(self):
-        return JobPost.objects.filter(posted_by=self.request.user).exclude(status=JobPost.ARCHIVED)
+        return JobPost.objects.filter(posted_by=self.request.user)
 
 class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = JobPost.objects.all()
@@ -39,9 +39,6 @@ class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         instance.status = JobPost.ARCHIVED
         instance.save()
-        
-    def get_queryset(self):
-        return JobPost.objects.exclude(status=JobPost.ARCHIVED)
 
 class JobPostRetrieveView(generics.RetrieveAPIView):
     queryset = JobPost.objects.all()
@@ -54,4 +51,4 @@ class JobPostRetrieveView(generics.RetrieveAPIView):
         return JobPost.objects.filter(
             id=self.kwargs["job_id"],
             posted_by=self.request.user
-        ).exclude(status=JobPost.ARCHIVED)
+        )

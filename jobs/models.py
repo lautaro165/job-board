@@ -3,6 +3,8 @@ from users.models import CustomUser
 
 from companies.models import Company
 
+from .managers import JobPostManager
+
 # Create your models here.
 
 class JobPost(models.Model):
@@ -55,6 +57,9 @@ class JobPost(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     applicants = models.ManyToManyField(CustomUser, through="applications.Application", related_name="applied_jobs")
+    
+    objects = JobPostManager()
+    all_objects = models.Manager()
 
     def __str__(self):
         return f"{self.title} - {self.company or self.posted_by.username}"
