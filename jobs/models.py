@@ -15,15 +15,17 @@ class JobPost(models.Model):
     ACTIVE = 'AC'
     CLOSED = 'CL'
     PAUSED = 'PA'
+    ARCHIVED = "AR"
     
     JOB_STATUSES = [
         (ACTIVE, 'Active'),
         (CLOSED, 'Closed'),
         (PAUSED, 'Paused'),
+        (ARCHIVED, 'Archived')
     ]
     
     status = models.CharField(
-        max_length=2,
+        max_length=20,
         choices=JOB_STATUSES,
         default=ACTIVE
     )
