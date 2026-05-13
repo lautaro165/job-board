@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 from jobs.models import JobPost
-from jobs.choices import JobStatuses
+from jobs.choices import JobPostStatus
 
 # VIEWS TESTS
 
@@ -95,7 +95,7 @@ def test_delete_job_post_owner_can_delete(user, job):
     job.refresh_from_db()
 
     assert response.status_code == 204
-    assert job.status == JobStatuses.ARCHIVED
+    assert job.status == JobPostStatus.ARCHIVED
 
 
 @pytest.mark.django_db
@@ -109,7 +109,7 @@ def test_delete_job_post_other_user_forbidden(user, user_2, job):
     job.refresh_from_db()
 
     assert response.status_code == 403
-    assert job.status != JobStatuses.ARCHIVED
+    assert job.status != JobPostStatus.ARCHIVED
 
 
 @pytest.mark.django_db

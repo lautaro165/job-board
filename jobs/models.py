@@ -5,7 +5,7 @@ from companies.models import Company
 
 from .managers import JobPostManager
 
-from .choices import JobStatuses
+from .choices import JobPostStatus
 
 # Create your models here.
 
@@ -19,8 +19,8 @@ class JobPost(models.Model):
     
     status = models.CharField(
         max_length=20,
-        choices=JobStatuses.choices,
-        default=JobStatuses.ACTIVE
+        choices=JobPostStatus.choices,
+        default=JobPostStatus.ACTIVE
     )
     
     FULL_TIME = 'FT'

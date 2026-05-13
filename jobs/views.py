@@ -5,7 +5,7 @@ from .filters import JobPostFilter
 from .models import JobPost
 from .permissions import IsJobOwner
 from .serializers import JobPostSerializer
-from .choices import JobStatuses
+from .choices import JobPostStatus
 
 # Create your views here.
 
@@ -38,7 +38,7 @@ class JobPostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return super().update(request, *args, **kwargs)
     
     def perform_destroy(self, instance):
-        instance.status = JobStatuses.ARCHIVED
+        instance.status = JobPostStatus.ARCHIVED
         instance.save()
 
 class JobPostRetrieveView(generics.RetrieveAPIView):
