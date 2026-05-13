@@ -19,8 +19,8 @@ class JobPost(models.Model):
     
     status = models.CharField(
         max_length=20,
-        choices=JobStatuses.choices,
-        default=JobStatuses.ACTIVE
+        choices=JobPostStatus.choices,
+        default=JobPostStatus.ACTIVE
     )
     
     employment_type = models.CharField(

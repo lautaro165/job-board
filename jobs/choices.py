@@ -1,6 +1,6 @@
 from django.db import models
 
-class JobStatuses(models.TextChoices):
+class JobPostStatus(models.TextChoices):
     ACTIVE = 'active', 'Active'
     CLOSED = 'closed', 'Closed'
     PAUSED = 'paused', 'Paused'
