@@ -21,7 +21,6 @@ def test_respond_to_application_valid_statuses(user, application, status_value):
     assert response.status_code == 200
     assert response.data["status"] == status_value
 
-
 @pytest.mark.django_db
 def test_respond_to_application_invalid_status(user, application):
     client = APIClient()
