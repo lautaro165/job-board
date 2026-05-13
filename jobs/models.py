@@ -5,7 +5,7 @@ from companies.models import Company
 
 from .managers import JobPostManager
 
-from .choices import JobPostStatus
+from .choices import JobStatuses, EmploymentTypes
 
 # Create your models here.
 
@@ -23,22 +23,10 @@ class JobPost(models.Model):
         default=JobPostStatus.ACTIVE
     )
     
-    FULL_TIME = 'FT'
-    PART_TIME = 'PT'
-    REMOTE = 'RM'
-    CONTRACT = 'CT'
-    
-    EMPLOYMENT_TYPES = [
-        (FULL_TIME, 'Full-Time'),
-        (PART_TIME, 'Part-Time'),
-        (REMOTE, 'Remote'),
-        (CONTRACT, 'Contract'),
-    ]
-    
     employment_type = models.CharField(
         max_length=2,
-        choices=EMPLOYMENT_TYPES,
-        default=FULL_TIME
+        choices= EmploymentTypes.choices,
+        default=EmploymentTypes.FULL_TIME
     )
     
     salary = models.PositiveIntegerField(null=True, blank=True)
