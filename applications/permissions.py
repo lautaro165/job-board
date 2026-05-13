@@ -22,4 +22,4 @@ class IsJobOwner(BasePermission):
 class IsApplicationOwnerOrJobOwner(BasePermission):
 
     def has_object_permission(self, request, view, obj):
-        return obj.applicant == request.user or obj.job.owner == request.user
+        return obj.applicant == request.user or obj.job.posted_by == request.user
