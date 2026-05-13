@@ -1,9 +1,6 @@
 from django.db import models
+from .querysets import JobPostQuerySet
 
-class JobPostQuerySet(models.QuerySet):
-    def active_jobs(self):
-        return self.exclude(status="ARCHIVED")
-
-class JobPostManager(models.Manager):
+class JobPostManager(models.Manager.from_queryset(JobPostQuerySet)):
     def get_queryset(self):
-        return JobPostQuerySet(self.model, using=self._db).active_jobs()
+        return super().get_queryset().visible()
