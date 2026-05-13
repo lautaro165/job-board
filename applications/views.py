@@ -8,11 +8,11 @@ from rest_framework.validators import ValidationError
 from rest_framework import status, generics
 
 from jobs.models import JobPost
-from .exceptions import ForbiddenApplicationStatusUpdate
 from .models import Application
 from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
-from .services import apply_to_job_service, respond_to_application_service, withdraw_application_service
-from .permissions import IsJobOwner, IsApplicationOwnerOrJobOwner
+from .services import respond_to_application_service, withdraw_application_service
+from .permissions import IsJobOwner, CanAccessApplication
+from .filters import ApplicationFilter
 
 
 # Create your views here.
@@ -33,7 +33,7 @@ class ApplyToJobView(generics.CreateAPIView):
 
 class ApplicationDetailView(generics.RetrieveAPIView):
     serializer_class = ApplicationSerializer
-    permission_classes = [IsAuthenticated, IsApplicationOwnerOrJobOwner]
+    permission_classes = [IsAuthenticated, CanAccessApplication]
 
     queryset = Application.objects.all()
     lookup_field = "id"
@@ -71,7 +71,7 @@ class RespondToApplicationView(generics.UpdateAPIView):
     
 class WithdrawApplicationView(generics.UpdateAPIView):
     queryset = Application.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanAccessApplication]
     lookup_url_kwarg = "application_id"
     lookup_field = "id"
     http_method_names = ["patch"]
@@ -91,6 +91,7 @@ class WithdrawApplicationView(generics.UpdateAPIView):
 class UserApplicationsListView(generics.ListAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
+    filterset_class = ApplicationFilter
 
     def get_queryset(self):
         return Application.objects.filter(applicant=self.request.user)
@@ -98,6 +99,7 @@ class UserApplicationsListView(generics.ListAPIView):
 class JobApplicationsListView(generics.ListAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated, IsJobOwner]
+    filterset_class = ApplicationFilter
 
     def get_queryset(self):
         job_id = self.kwargs["job_id"]
