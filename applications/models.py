@@ -1,15 +1,13 @@
 from django.db import models
 from users.models import CustomUser
 from jobs.models import JobPost
+from .querysets import ApplicationQuerySet
+from .choices import ApplicationStatus
+
+
 
 # Create your models here.
 
-class ApplicationStatus(models.TextChoices):
-    PENDING = "pending", "Pending"
-    REVIEWED = "reviewed", "Reviewed"
-    WITHDRAWN = "withdrawn", "Withdrawn"
-    ACCEPTED = "accepted", "Accepted"
-    REJECTED = "rejected", "Rejected"
 
 class Application(models.Model):
     applicant = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -23,6 +21,8 @@ class Application(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    objects = ApplicationQuerySet.as_manager()
 
     class Meta:
         unique_together = ("applicant", "job")
