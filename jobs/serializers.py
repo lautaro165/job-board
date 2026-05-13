@@ -13,7 +13,7 @@ class JobPostSerializer(ModelSerializer):
         
         user = self.context['request'].user
         
-        is_owner = value.posted_by == user
+        is_owner = value.owner == user
         is_admin = value.admins.filter(id=user.id).exists()
 
         if not (is_owner or is_admin):
