@@ -3,9 +3,14 @@ import pytest
 from rest_framework.test import APIClient
 from django.urls import reverse
 
+from applications.models import ApplicationStatus
+
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("status_value", ["accepted", "rejected", "reviewed"])
+@pytest.mark.parametrize("status_value", [
+    status for status in ApplicationStatus.values
+    if status != ApplicationStatus.PENDING
+])
 def test_respond_to_application_valid_statuses(user, application, status_value):
     client = APIClient()
     client.force_authenticate(user=user)
