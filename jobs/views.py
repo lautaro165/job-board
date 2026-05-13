@@ -22,7 +22,7 @@ class JobPostListCreateView(generics.ListCreateAPIView):
 
 class GetOwnerJobPostListView(generics.ListAPIView):
     serializer_class = JobPostSerializer
-    permission_classes = [IsAuthenticated, IsJobOwner]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return JobPost.objects.filter(posted_by=self.request.user)
@@ -49,6 +49,5 @@ class JobPostRetrieveView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return JobPost.objects.filter(
-            id=self.kwargs["job_id"],
-            posted_by=self.request.user
+            id=self.kwargs["job_id"]
         )
