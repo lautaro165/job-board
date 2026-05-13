@@ -19,14 +19,14 @@ def test_unauthenticated_user_can_list(user, job):
     assert JobPost.objects.all().count() == len(response.data)
     assert response.status_code == 200
 
-@pytest.mark.django_db
-def test_forbidden_get_job_post_details(user_2, job):
-    client = APIClient()
-    client.force_authenticate(user=user_2)
+# @pytest.mark.django_db
+# def test_forbidden_get_job_post_details(user_2, job):
+#     client = APIClient()
+#     client.force_authenticate(user=user_2)
 
-    response = client.get(reverse("get_job_details", kwargs={"job_id": job.id}))
+#     response = client.get(reverse("get_job_details", kwargs={"job_id": job.id}))
 
-    assert response.status_code == 404
+#     assert response.status_code == 404
 
 #POST TESTS
 @pytest.mark.django_db

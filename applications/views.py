@@ -70,13 +70,11 @@ class RespondToApplicationView(generics.UpdateAPIView):
         )
     
 class WithdrawApplicationView(generics.UpdateAPIView):
+    queryset = Application.objects.all()
     permission_classes = [IsAuthenticated]
     lookup_url_kwarg = "application_id"
     lookup_field = "id"
     http_method_names = ["patch"]
-
-    def get_queryset(self):
-        return Application.objects.filter(applicant=self.request.user)
 
     def update(self, request, *args, **kwargs):
         application = self.get_object()

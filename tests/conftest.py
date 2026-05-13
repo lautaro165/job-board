@@ -9,7 +9,7 @@ from applications.models import Application
 
 @pytest.fixture
 def user():
-    return CustomUser.objects.create_user(username="random_user",email="random_user@gmail.com",password="123456", role="employee")
+    return CustomUser.objects.create_user(username="random_user",email="random_user@gmail.com",password="123456", role="dev")
 
 @pytest.fixture
 def company(user):
@@ -21,7 +21,7 @@ def job(user,company):
 
 @pytest.fixture
 def user_2():
-    return CustomUser.objects.create_user(username="random_user_2",email="random_user_2@gmail.com",password="123456", role="employee")
+    return CustomUser.objects.create_user(username="random_user_2",email="random_user_2@gmail.com",password="123456", role="dev")
 
 
 @pytest.fixture
