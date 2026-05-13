@@ -5,6 +5,8 @@ from companies.models import Company
 
 from .managers import JobPostManager
 
+from .choices import JobStatuses
+
 # Create your models here.
 
 class JobPost(models.Model):
@@ -14,22 +16,11 @@ class JobPost(models.Model):
     company = models.ForeignKey(Company,on_delete = models.CASCADE, related_name="jobs", null=True, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     
-    ACTIVE = 'AC'
-    CLOSED = 'CL'
-    PAUSED = 'PA'
-    ARCHIVED = "AR"
-    
-    JOB_STATUSES = [
-        (ACTIVE, 'Active'),
-        (CLOSED, 'Closed'),
-        (PAUSED, 'Paused'),
-        (ARCHIVED, 'Archived')
-    ]
     
     status = models.CharField(
         max_length=20,
-        choices=JOB_STATUSES,
-        default=ACTIVE
+        choices=JobStatuses.choices,
+        default=JobStatuses.ACTIVE
     )
     
     FULL_TIME = 'FT'
