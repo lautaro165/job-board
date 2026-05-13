@@ -26,7 +26,7 @@ def respond_to_application_service(
     if application.job.posted_by != responder:
         raise ForbiddenApplicationStatusUpdate()
 
-    if status not in ApplicationStatus.values:
+    if status not in [value for value in ApplicationStatus.values if value != "pending"]:
         raise InvalidUpdateStatus()
 
     application.status = status
