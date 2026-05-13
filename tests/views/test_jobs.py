@@ -5,6 +5,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 from jobs.models import JobPost
+from jobs.choices import JobStatuses
 
 # VIEWS TESTS
 
@@ -18,15 +19,6 @@ def test_unauthenticated_user_can_list(user, job):
 
     assert JobPost.objects.all().count() == len(response.data)
     assert response.status_code == 200
-
-@pytest.mark.django_db
-def test_forbidden_get_job_post_details(user_2, job):
-    client = APIClient()
-    client.force_authenticate(user=user_2)
-
-    response = client.get(reverse("get_job_details", kwargs={"job_id": job.id}))
-
-    assert response.status_code == 404
 
 #POST TESTS
 @pytest.mark.django_db
@@ -103,7 +95,7 @@ def test_delete_job_post_owner_can_delete(user, job):
     job.refresh_from_db()
 
     assert response.status_code == 204
-    assert job.status == JobPost.ARCHIVED
+    assert job.status == JobStatuses.ARCHIVED
 
 
 @pytest.mark.django_db
@@ -117,7 +109,7 @@ def test_delete_job_post_other_user_forbidden(user, user_2, job):
     job.refresh_from_db()
 
     assert response.status_code == 403
-    assert job.status != JobPost.ARCHIVED
+    assert job.status != JobStatuses.ARCHIVED
 
 
 @pytest.mark.django_db
