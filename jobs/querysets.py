@@ -1,7 +1,6 @@
 from django.db import models
-
-from .models import JobPost
+from .choices import JobStatuses
 
 class JobPostQuerySet(models.QuerySet):
     def visible(self):
-        return self.exclude(status=JobPost.ARCHIVED)
+        return self.exclude(status=JobStatuses.ARCHIVED)
