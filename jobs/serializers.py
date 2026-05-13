@@ -6,7 +6,7 @@ from .models import JobPost
 class JobPostSerializer(ModelSerializer):
     class Meta:
         model = JobPost
-        fields = "__all__"
+        fields = ['id', 'title', 'description', 'company', 'location', 'posted_by', 'posted_at', 'status', 'employment_type', 'salary']
         read_only_fields = ('posted_by','company')
     
     def validate_company(self, value):
@@ -26,4 +26,4 @@ class JobPostSerializer(ModelSerializer):
 class JobPostListSerializer(ModelSerializer):
     class Meta:
         model = JobPost
-        fields = "__all__"
+        fields = ['id', 'title', 'company', 'location', 'status', 'employment_type', 'salary']
