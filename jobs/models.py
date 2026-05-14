@@ -5,7 +5,7 @@ from companies.models import Company
 
 from .managers import JobPostManager
 
-from .choices import JobStatuses, EmploymentTypes
+from .choices import JobPostStatus, EmploymentTypes
 
 # Create your models here.
 
