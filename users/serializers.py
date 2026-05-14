@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate
 
 from users.models import CustomUser
 
