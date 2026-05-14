@@ -13,6 +13,7 @@ from applications.models import Application
 class CustomUserFactory(DjangoModelFactory):
     class Meta:
         model = CustomUser
+        skip_postgeneration_save = True
     
     username = factory.Sequence(lambda n: f'user_{n}')
     email = factory.Sequence(lambda n: f'user_{n}@test.com')
