@@ -1,4 +1,6 @@
 import pytest
+import factory
+from factory.django import DjangoModelFactory
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -6,6 +8,26 @@ from users.models import CustomUser
 from companies.models import Company
 from jobs.models import JobPost
 from applications.models import Application
+
+
+class CustomUserFactory(DjangoModelFactory):
+    class Meta:
+        model = CustomUser
+    
+    username = factory.Sequence(lambda n: f'user_{n}')
+    email = factory.Sequence(lambda n: f'user_{n}@test.com')
+    password = 'TestPass123!'
+    first_name = factory.Faker('first_name')
+    last_name = factory.Faker('last_name')
+    role = 'dev'
+    is_active = True
+    
+    @factory.post_generation
+    def set_password(obj, create, extracted):
+        if not create:
+            return
+        obj.set_password(obj.password)
+        obj.save()
 
 @pytest.fixture
 def user():
@@ -62,3 +84,21 @@ def existing_test_user(django_db_blocker):
             email="random_user@outlook.com",
             password="somepassword"
         )
+
+@pytest.fixture
+def user_factory():
+    return CustomUserFactory
+
+@pytest.fixture
+def login_serializer_valid_data():
+    return {
+        'username': 'testuser',
+        'password': 'TestPass123!'
+    }
+
+@pytest.fixture
+def login_serializer_invalid_data():
+    return {
+        'username': 'nonexistent',
+        'password': 'WrongPassword'
+    }
