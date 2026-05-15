@@ -42,8 +42,8 @@ class TestLoginUserSerializer:
         assert 'access_expires' in validated_data
         assert 'refresh_expires' in validated_data
 
-    @patch('django.contrib.auth.authenticate')
-    @patch('rest_framework_simplejwt.tokens.RefreshToken.for_user')
+    @patch('users.serializers.authenticate')
+    @patch('users.serializers.RefreshToken.for_user')
     @pytest.mark.django_db
     def test_login_valid_credentials_returns_correct_user(self, mock_refresh, mock_auth, user_factory):
         """Test that the returned user matches the authenticated user"""
@@ -67,7 +67,7 @@ class TestLoginUserSerializer:
         assert serializer.validated_data['user'] == user
 
 
-    @patch('django.contrib.auth.authenticate')
+    @patch('users.serializers.authenticate')
     @pytest.mark.django_db
     def test_login_invalid_credentials_raises_error(self, mock_auth):
         """Test that invalid credentials raise ValidationError with correct message"""
@@ -77,7 +77,7 @@ class TestLoginUserSerializer:
         assert not serializer.is_valid()
         assert "non_field_errors" in serializer.errors
 
-    @patch('django.contrib.auth.authenticate')
+    @patch('users.serializers.authenticate')
     @pytest.mark.django_db
     def test_login_wrong_password_raises_error(self, mock_auth):
         """Test that wrong password raises ValidationError"""
@@ -86,8 +86,8 @@ class TestLoginUserSerializer:
         serializer = LoginUserSerializer(data={'username': 'testuser', 'password': 'WrongPassword'})
         assert not serializer.is_valid()
 
-    @patch('django.contrib.auth.authenticate')
-    @patch('rest_framework_simplejwt.tokens.RefreshToken.for_user')
+    @patch('users.serializers.authenticate')
+    @patch('users.serializers.RefreshToken.for_user')
     @pytest.mark.django_db
     def test_login_inactive_user_raises_error(self, mock_refresh, mock_auth, user_factory):
         """Test that inactive user raises ValidationError"""
@@ -119,8 +119,8 @@ class TestLoginUserSerializer:
         assert not serializer.is_valid()
         assert "username" in serializer.errors and "password" in serializer.errors
 
-    @patch('django.contrib.auth.authenticate')
-    @patch('rest_framework_simplejwt.tokens.RefreshToken.for_user')
+    @patch('users.serializers.authenticate')
+    @patch('users.serializers.RefreshToken.for_user')
     @pytest.mark.django_db
     def test_login_returns_correct_token_structure(self, mock_refresh, mock_auth, user_factory):
         """Test that response contains correct token structure with proper types"""
@@ -406,7 +406,7 @@ class TestUserProfileInfoSerializer:
 class TestLogoutSerializer:
     """Tests for LogoutSerializer"""
 
-    @patch('rest_framework_simplejwt.tokens.RefreshToken')
+    @patch('users.serializers.RefreshToken')
     def test_logout_valid_token_blacklists_successfully(self, mock_refresh_token_class):
         """Test that valid token is successfully blacklisted"""
         mock_instance = MagicMock()
@@ -418,7 +418,7 @@ class TestLogoutSerializer:
         serializer.save()
         mock_instance.blacklist.assert_called_once()
 
-    @patch('rest_framework_simplejwt.tokens.RefreshToken')
+    @patch('users.serializers.RefreshToken')
     def test_logout_invalid_token_raises_error(self, mock_refresh_token_class):
         """Test that invalid token raises ValidationError"""
         mock_refresh_token_class.side_effect = TokenError('Invalid token')
@@ -431,7 +431,7 @@ class TestLogoutSerializer:
         
         assert "refresh" in exc.value.detail
 
-    @patch('rest_framework_simplejwt.tokens.RefreshToken')
+    @patch('users.serializers.RefreshToken')
     def test_logout_expired_token_raises_error(self, mock_refresh_token_class):
         """Test that expired token raises ValidationError"""
         mock_instance = MagicMock()
