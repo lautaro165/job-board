@@ -36,8 +36,6 @@ class TestLoginUserSerializer:
         
         validated_data = serializer.validated_data
         
-        print(validated_data)
-        
         assert 'access' in validated_data
         assert 'refresh' in validated_data
         assert 'access_expires' in validated_data
