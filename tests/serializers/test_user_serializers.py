@@ -43,9 +43,13 @@ class TestLoginUserSerializer:
 
     @patch('django.contrib.auth.authenticate')
     @patch('rest_framework_simplejwt.tokens.RefreshToken.for_user')
+    @pytest.mark.django_db
     def test_login_valid_credentials_returns_correct_user(self, mock_refresh, mock_auth, user_factory):
         """Test that the returned user matches the authenticated user"""
-        user = user_factory()
+        
+        test_username = 'testuser'
+        test_password = 'TestPass123!'
+        user = user_factory(username=test_username, password=test_password)
         mock_auth.return_value = user
         
         mock_token = MagicMock()
@@ -56,7 +60,7 @@ class TestLoginUserSerializer:
         mock_token.__str__.return_value = "refresh_token_value"
         mock_refresh.return_value = mock_token
         
-        serializer = LoginUserSerializer(data={'username': 'testuser', 'password': 'TestPass123!'})
+        serializer = LoginUserSerializer(data={'username': test_username, 'password': test_password})
         assert serializer.is_valid()
         
         assert serializer.validated_data['user'] == user
