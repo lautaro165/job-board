@@ -8,20 +8,6 @@ class JobPostSerializer(ModelSerializer):
         model = JobPost
         fields = ['id', 'title', 'description', 'company', 'location', 'posted_by', 'posted_at', 'status', 'employment_type', 'salary']
         read_only_fields = ('posted_by','company')
-    
-    def validate_company(self, value):
-        
-        user = self.context['request'].user
-        
-        is_owner = value.owner == user
-        is_admin = value.admins.filter(id=user.id).exists()
-
-        if not (is_owner or is_admin):
-            raise ValidationError(
-                "You cannot post new jobs in this Company"
-            )
-        
-        return value
         
 class JobPostListSerializer(ModelSerializer):
     class Meta:
