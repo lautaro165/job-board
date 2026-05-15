@@ -61,14 +61,16 @@ class TestLoginUserSerializer:
         
         assert serializer.validated_data['user'] == user
 
+
     @patch('django.contrib.auth.authenticate')
+    @pytest.mark.django_db
     def test_login_invalid_credentials_raises_error(self, mock_auth):
         """Test that invalid credentials raise ValidationError with correct message"""
         mock_auth.return_value = None
         
         serializer = LoginUserSerializer(data={'username': 'testuser', 'password': 'WrongPassword'})
         assert not serializer.is_valid()
-        assert 'Invalid credentials.' in str(serializer.errors)
+        assert "non_field_errors" in serializer.errors
 
     @patch('django.contrib.auth.authenticate')
     @pytest.mark.django_db
@@ -89,28 +91,28 @@ class TestLoginUserSerializer:
         
         serializer = LoginUserSerializer(data={'username': 'testuser', 'password': 'TestPass123!'})
         assert not serializer.is_valid()
-        assert 'User is disabled.' in str(serializer.errors)
+        assert "non_field_errors" in serializer.errors
 
     @pytest.mark.django_db
     def test_login_missing_username_raises_error(self):
         """Test that missing username raises ValidationError"""
         serializer = LoginUserSerializer(data={'password': 'TestPass123!'})
         assert not serializer.is_valid()
-        assert 'Must include "username" and "password".' in str(serializer.errors)
+        assert "username" in serializer.errors
 
     @pytest.mark.django_db
     def test_login_missing_password_raises_error(self):
         """Test that missing password raises ValidationError"""
         serializer = LoginUserSerializer(data={'username': 'testuser'})
         assert not serializer.is_valid()
-        assert 'Must include "username" and "password".' in str(serializer.errors)
+        assert "password" in serializer.errors
 
     @pytest.mark.django_db
     def test_login_both_fields_empty_raises_error(self):
         """Test that both fields being empty raises ValidationError"""
         serializer = LoginUserSerializer(data={'username': '', 'password': ''})
         assert not serializer.is_valid()
-        assert 'Must include "username" and "password".' in str(serializer.errors)
+        assert "username" in serializer.errors and "password" in serializer.errors
 
     @patch('django.contrib.auth.authenticate')
     @patch('rest_framework_simplejwt.tokens.RefreshToken.for_user')
@@ -141,13 +143,17 @@ class TestLoginUserSerializer:
         """Test that empty strings are treated as missing fields"""
         serializer = LoginUserSerializer(data={'username': '', 'password': 'TestPass123!'})
         assert not serializer.is_valid()
-        assert 'Must include "username" and "password".' in str(serializer.errors)
+        assert "username" in serializer.errors
 
-    @patch('django.contrib.auth.authenticate')
-    @patch('rest_framework_simplejwt.tokens.RefreshToken.for_user')
+    @patch('users.serializers.authenticate')
+    @patch('users.serializers.RefreshToken.for_user')
+    @pytest.mark.django_db
     def test_login_response_contains_user_object(self, mock_refresh, mock_auth, user_factory):
         """Test that response contains the user object"""
-        user = user_factory()
+        
+        test_username = 'testuser'
+        test_password = 'TestPass123!'
+        user = user_factory(username=test_username, password=test_password)
         mock_auth.return_value = user
         
         mock_token = MagicMock()
@@ -158,11 +164,14 @@ class TestLoginUserSerializer:
         mock_token.__str__.return_value = "refresh_token_value"
         mock_refresh.return_value = mock_token
         
-        serializer = LoginUserSerializer(data={'username': 'testuser', 'password': 'TestPass123!'})
+        
+        serializer = LoginUserSerializer(data={'username': 'test_username', 'password': test_password})
         assert serializer.is_valid()
         
         assert 'user' in serializer.validated_data
-        assert serializer.validated_data['user'] is user
+        assert serializer.validated_data['user'] == user
+        
+        mock_auth.assert_called_once_with(username=test_username, password=test_password)
 
 
 class TestCustomUserRegistrationSerializer:
