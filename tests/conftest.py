@@ -50,8 +50,8 @@ def valid_job_post_data(company):
         'description': 'We are hiring',
         'company': company.id,
         'location': 'New York',
-        'status': 'OPEN',
-        'employment_type': 'FULL_TIME',
+        'status': JobPostStatus.ACTIVE,
+        'employment_type': EmploymentTypes.FULL_TIME,
         'salary': 120000,
     }
 
