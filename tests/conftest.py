@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import CustomUser
 from companies.models import Company
 from jobs.models import JobPost
+from jobs.choices import JobPostStatus, EmploymentTypes
 from applications.models import Application
 
 
@@ -29,6 +30,30 @@ class CustomUserFactory(DjangoModelFactory):
             return
         obj.set_password(obj.password)
         obj.save()
+
+class JobPostFactory(DjangoModelFactory):
+    class Meta:
+        model = JobPost
+        skip_postgeneration_save = True
+    
+    title = factory.Sequence(lambda n: f'Job Title {n}')
+    description = factory.Faker('paragraph')
+    location = factory.Faker('city')
+    status = JobPostStatus.ACTIVE
+    employment_type = EmploymentTypes.FULL_TIME
+    salary = factory.Faker('random_number', digits=5)
+
+@pytest.fixture
+def valid_job_post_data(company):
+    return {
+        'title': 'Software Engineer',
+        'description': 'We are hiring',
+        'company': company.id,
+        'location': 'New York',
+        'status': 'OPEN',
+        'employment_type': 'FULL_TIME',
+        'salary': 120000,
+    }
 
 @pytest.fixture
 def user():

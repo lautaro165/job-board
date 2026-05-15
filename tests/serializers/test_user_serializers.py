@@ -3,7 +3,6 @@ from unittest.mock import patch, MagicMock
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import TokenError
 
-from companies import serializers
 from users.serializers import (
     LoginUserSerializer,
     CustomUserRegistrationSerializer,
