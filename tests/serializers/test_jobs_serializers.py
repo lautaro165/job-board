@@ -1,6 +1,8 @@
+from django.urls import reverse
 import pytest
 from unittest.mock import patch, MagicMock
 from rest_framework.exceptions import ValidationError
+from rest_framework.test import APIRequestFactory
 from rest_framework_simplejwt.tokens import TokenError
 
 from jobs.serializers import JobPostSerializer, JobPostListSerializer
@@ -12,8 +14,6 @@ class TestJobPostSerializer:
         'missing_field',
         [
             'title',
-            'description',
-            'location',
         ]
     )
     @pytest.mark.django_db
@@ -29,6 +29,8 @@ class TestJobPostSerializer:
     @pytest.mark.parametrize(
         'missing_field',
         [
+            'description',
+            'location',
             "company",
             "salary",
             "employment_type",
@@ -44,3 +46,19 @@ class TestJobPostSerializer:
         
         serializer = JobPostSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
+        
+    @pytest.mark.django_db
+    def test_validate_company_method(self, valid_job_post_data, company, user):
+        
+        data = valid_job_post_data.copy()
+        
+        data['company'] = company.id
+        
+        factory = APIRequestFactory()
+        
+        request = factory.post("jobs/list", data)
+        request.user = user
+        
+        job_post_serializer = JobPostSerializer(data=data, context={'request': request})
+        
+        assert job_post_serializer.is_valid(), job_post_serializer.errors
