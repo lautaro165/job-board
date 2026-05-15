@@ -5,10 +5,11 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 from rest_framework_simplejwt.tokens import TokenError
 
-from jobs.serializers import JobPostSerializer, JobPostListSerializer
+from jobs.serializers import JobPostCreateSerializer, JobPostListSerializer
+from tests.conftest import CompanyFactory, CustomUserFactory
 
 
-class TestJobPostSerializer:
+class TestJobPostCreateSerializer:
     
     @pytest.mark.parametrize(
         'missing_field',
@@ -17,13 +18,14 @@ class TestJobPostSerializer:
         ]
     )
     @pytest.mark.django_db
-    def test_serializer_missing_required_fields(self, missing_field, valid_job_post_data):
+    def test_serializer_missing_required_fields(self, missing_field, valid_job_post_data, authenticated_request):
         
-        data = valid_job_post_data.copy()
+        data = valid_job_post_data.copy()    
         
         data.pop(missing_field)
         
-        serializer = JobPostSerializer(data=data)
+        request = authenticated_request()
+        serializer = JobPostCreateSerializer(data=data, context={'request': request})
         assert not serializer.is_valid()
         
     @pytest.mark.parametrize(
@@ -38,27 +40,42 @@ class TestJobPostSerializer:
         ]
     )
     @pytest.mark.django_db
-    def test_serializer_missing_not_required_fields(self, missing_field, valid_job_post_data):
+    def test_serializer_missing_not_required_fields(self, missing_field, valid_job_post_data, authenticated_request, user):
         
         data = valid_job_post_data.copy()
         
         data.pop(missing_field)
         
-        serializer = JobPostSerializer(data=data)
+        request = authenticated_request()
+        request.user = user
+        
+        serializer = JobPostCreateSerializer(data=data, context={'request': request})
         assert serializer.is_valid(), serializer.errors
         
     @pytest.mark.django_db
-    def test_validate_company_method(self, valid_job_post_data, company, user):
+    def test_validate_company_method(self, valid_job_post_data, company, user, authenticated_request):
         
         data = valid_job_post_data.copy()
         
         data['company'] = company.id
         
-        factory = APIRequestFactory()
+        request = authenticated_request()
         
-        request = factory.post("jobs/list", data)
-        request.user = user
-        
-        job_post_serializer = JobPostSerializer(data=data, context={'request': request})
+        job_post_serializer = JobPostCreateSerializer(data=data, context={'request': request})
         
         assert job_post_serializer.is_valid(), job_post_serializer.errors
+    
+    @pytest.mark.django_db
+    def test_validate_company_method_not_owner_or_admin(self, valid_job_post_data, company, authenticated_request):
+        
+        data = valid_job_post_data.copy()
+        
+        data['company'] = company.id
+        
+        request = authenticated_request()
+        request.user = CustomUserFactory()
+        
+        serializer = JobPostCreateSerializer(data=data, context={'request': request})
+        
+        assert not serializer.is_valid()
+        assert 'company' in serializer.errors
