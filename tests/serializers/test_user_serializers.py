@@ -168,7 +168,7 @@ class TestLoginUserSerializer:
         mock_refresh.return_value = mock_token
         
         
-        serializer = LoginUserSerializer(data={'username': 'test_username', 'password': test_password})
+        serializer = LoginUserSerializer(data={'username': test_username, 'password': test_password})
         assert serializer.is_valid()
         
         assert 'user' in serializer.validated_data
