@@ -1,4 +1,5 @@
 import pytest
+from rest_framework.test import APIRequestFactory
 import factory
 from factory.django import DjangoModelFactory
 
@@ -62,6 +63,21 @@ def valid_job_post_data(company, user):
         'employment_type': EmploymentTypes.FULL_TIME,
         'salary': 120000,
     }
+    
+@pytest.fixture
+def authenticated_request(user):
+
+    factory = APIRequestFactory()
+
+    def make_request(data=None):
+
+        request = factory.post('/jobs/list/', data or {})
+
+        request.user = user
+
+        return request
+
+    return make_request
 
 @pytest.fixture
 def user():
