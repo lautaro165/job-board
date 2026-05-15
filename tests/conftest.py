@@ -30,6 +30,13 @@ class CustomUserFactory(DjangoModelFactory):
             return
         obj.set_password(obj.password)
         obj.save()
+        
+class CompanyFactory(DjangoModelFactory):
+    class Meta:
+        model = Company
+        skip_postgeneration_save = True
+    
+    name = factory.Sequence(lambda n: f'Company {n}')
 
 class JobPostFactory(DjangoModelFactory):
     class Meta:
@@ -44,10 +51,11 @@ class JobPostFactory(DjangoModelFactory):
     salary = factory.Faker('random_number', digits=5)
 
 @pytest.fixture
-def valid_job_post_data(company):
+def valid_job_post_data(company, user):
     return {
         'title': 'Software Engineer',
         'description': 'We are hiring',
+        'posted_by': user.id,
         'company': company.id,
         'location': 'New York',
         'status': JobPostStatus.ACTIVE,
