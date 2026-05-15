@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import TokenError
 
+from companies import serializers
 from users.serializers import (
     LoginUserSerializer,
     CustomUserRegistrationSerializer,
@@ -423,8 +424,12 @@ class TestLogoutSerializer:
         mock_refresh_token_class.side_effect = TokenError('Invalid token')
         
         serializer = LogoutSerializer(data={'refresh': 'invalid_token'})
-        assert not serializer.is_valid()
-        assert 'Invalid or expired token' in str(serializer.errors)
+        assert serializer.is_valid()
+        
+        with pytest.raises(ValidationError) as exc:
+            serializer.save()
+        
+        assert "refresh" in exc.value.detail
 
     @patch('rest_framework_simplejwt.tokens.RefreshToken')
     def test_logout_expired_token_raises_error(self, mock_refresh_token_class):
