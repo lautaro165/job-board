@@ -208,6 +208,7 @@ class TestCustomUserRegistrationSerializer:
         assert user.last_name == 'Doe'
         assert user.role == 'dev'
 
+    @pytest.mark.django_db
     def test_register_passwords_mismatch_raises_error(self):
         """Test that mismatched passwords raise ValidationError"""
         data = {
@@ -223,6 +224,7 @@ class TestCustomUserRegistrationSerializer:
         assert not serializer.is_valid()
         assert "Provided password don't match" in str(serializer.errors)
 
+    @pytest.mark.django_db
     def test_register_password_too_short_raises_error(self):
         """Test that password shorter than 8 characters raises ValidationError"""
         data = {
@@ -235,6 +237,7 @@ class TestCustomUserRegistrationSerializer:
         serializer = CustomUserRegistrationSerializer(data=data)
         assert not serializer.is_valid()
 
+    @pytest.mark.django_db
     def test_register_password2_too_short_raises_error(self):
         """Test that password2 shorter than 8 characters raises ValidationError"""
         data = {
