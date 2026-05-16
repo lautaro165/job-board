@@ -23,5 +23,13 @@ class ApplicationResponseSerializer(serializers.ModelSerializer):
         fields = ["application", "responder", "message", "created_at", "status"]
 
 class ApplicationStatusUpdateSerializer(serializers.Serializer):
-    status = serializers.ChoiceField(choices=ApplicationStatus.choices)
+    
+    ALLOWED_STATUSES = [
+        ApplicationStatus.REVIEWED,
+        ApplicationStatus.WITHDRAWN,
+        ApplicationStatus.ACCEPTED,
+        ApplicationStatus.REJECTED,
+    ]
+    
+    status = serializers.ChoiceField(choices=ALLOWED_STATUSES)
     message = serializers.CharField(required=False, allow_blank=True)
