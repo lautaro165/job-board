@@ -1,9 +1,4 @@
-from django.urls import reverse
 import pytest
-from unittest.mock import patch, MagicMock
-from rest_framework.exceptions import ValidationError
-from rest_framework.test import APIRequestFactory
-from rest_framework_simplejwt.tokens import TokenError
 
 from jobs.serializers import JobPostCreateSerializer, JobPostListSerializer
 from tests.conftest import CompanyFactory, CustomUserFactory, JobPostFactory
