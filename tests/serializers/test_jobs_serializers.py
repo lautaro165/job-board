@@ -6,7 +6,7 @@ from rest_framework.test import APIRequestFactory
 from rest_framework_simplejwt.tokens import TokenError
 
 from jobs.serializers import JobPostCreateSerializer, JobPostListSerializer
-from tests.conftest import CompanyFactory, CustomUserFactory
+from tests.conftest import CompanyFactory, CustomUserFactory, JobPostFactory
 
 
 class TestJobPostCreateSerializer:
@@ -98,3 +98,12 @@ class TestJobPostListSerializer:
         }
 
         assert set(serializer.data.keys()) == expected_fields, f"Expected fields: {expected_fields}, but got: {set(serializer.data.keys())}"
+        
+    @pytest.mark.django_db
+    def test_serializer_with_many_true(self):
+
+        jobs = JobPostFactory.create_batch(3)
+
+        serializer = JobPostListSerializer(jobs, many=True)
+
+        assert len(serializer.data) == 3
