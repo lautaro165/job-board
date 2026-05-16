@@ -38,6 +38,7 @@ class CompanyFactory(DjangoModelFactory):
         skip_postgeneration_save = True
     
     name = factory.Sequence(lambda n: f'Company {n}')
+    owner = factory.SubFactory(CustomUserFactory)
 
 class JobPostFactory(DjangoModelFactory):
     class Meta:
@@ -50,6 +51,7 @@ class JobPostFactory(DjangoModelFactory):
     status = JobPostStatus.ACTIVE
     employment_type = EmploymentTypes.FULL_TIME
     salary = factory.Faker('random_number', digits=5)
+    posted_by = factory.SubFactory(CustomUserFactory)
 
 @pytest.fixture
 def valid_job_post_data(company, user):
