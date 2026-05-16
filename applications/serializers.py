@@ -38,24 +38,14 @@ class ApplicationListSerializer(_ApplicationBaseSerializer):
         ]
         
 class ApplicationDetailSerializer(_ApplicationBaseSerializer):
-    applicant_username = serializers.CharField(
-        source="applicant.username"
-    )
-
-    job_title = serializers.CharField(
-        source="job.title"
-    )
-
     class Meta(_ApplicationBaseSerializer.Meta):
         fields = _ApplicationBaseSerializer.Meta.fields + [
-            "applicant_username",
-            "job_title",
+            "applicant",
+            "job",
             "cover_letter",
             "resume",
         ]
         
-
-    
 class ApplicationResponseSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source="application.status", read_only=True)
     
