@@ -89,7 +89,7 @@ def company(user):
 
 @pytest.fixture
 def job(user,company):
-    return JobPost.objects.create(posted_by=user,title="random_job",description="", company=company)
+    return JobPost.objects.create(posted_by=user,title="random_job",description="", company=company, location="random_location", status=JobPostStatus.ACTIVE, employment_type=EmploymentTypes.FULL_TIME, salary=100000)
 
 @pytest.fixture
 def user_2():
