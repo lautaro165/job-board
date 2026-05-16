@@ -79,3 +79,22 @@ class TestJobPostCreateSerializer:
         
         assert not serializer.is_valid()
         assert 'company' in serializer.errors
+    
+class TestJobPostListSerializer:
+    
+    @pytest.mark.django_db
+    def test_serializer_contains_expected_fields(self, job):
+
+        serializer = JobPostListSerializer(job)
+
+        expected_fields = {
+            'id',
+            'title',
+            'company',
+            'location',
+            'status',
+            'employment_type',
+            'salary',
+        }
+
+        assert set(serializer.data.keys()) == expected_fields, f"Expected fields: {expected_fields}, but got: {set(serializer.data.keys())}"
