@@ -13,7 +13,6 @@ class JobPostListSerializer(ModelSerializer):
     class Meta:
         model = JobPost
         fields = ['id', 'title', 'company', 'location', 'status', 'employment_type', 'salary']
-        read_only_fields = fields
         
 class JobPostCreateSerializer(ModelSerializer):
 
