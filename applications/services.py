@@ -4,7 +4,7 @@ from applications.models import Application, ApplicationResponse, ApplicationSta
 
 from rest_framework.exceptions import ValidationError, PermissionDenied
 
-def apply_to_job_service(user, job):
+def apply_to_job_service(user, job, **application_data):
 
     if Application.objects.filter(applicant=user, job=job).exists():
         raise ApplicationAlreadyExists("You already applied this job")
@@ -15,6 +15,7 @@ def apply_to_job_service(user, job):
     return Application.objects.create(
         applicant=user,
         job=job,
+        **application_data
     )
 
 def respond_to_application_service(
