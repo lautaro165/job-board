@@ -16,7 +16,7 @@ class TestApplicationStatusUpdateSerializer:
             (ApplicationStatus.ACCEPTED, ''),
         ]
     )
-    def test_serializer_valid_data(self, status, message):
+    def test_serializer_valid_updates(self, status, message):
         data = {
             'status': status,
             'message': message
@@ -24,3 +24,19 @@ class TestApplicationStatusUpdateSerializer:
         
         serializer = ApplicationStatusUpdateSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
+        
+    @pytest.mark.parametrize(
+        ['status', 'message'],
+        [
+            (ApplicationStatus.PENDING, 'Application pending.'),
+        ]
+    )
+    def test_serializer_invalid_updates(self, status, message):
+        data = {
+            'status': status,
+            'message': message
+        }
+
+        serializer = ApplicationStatusUpdateSerializer(data=data)
+        assert not serializer.is_valid(), "Expected serializer to be invalid"
+        assert 'status' in serializer.errors, "Expected 'status' field to have validation errors"
