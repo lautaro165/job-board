@@ -21,7 +21,7 @@ def validate_file_size(file):
         )
 
 
-def validate_pdf_extension(file, extension="pdf"):
+def validate_file_extension(file, extension="pdf"):
     extension_validator = FileExtensionValidator(allowed_extensions=[extension])
     extension_validator(file)
 
@@ -62,7 +62,7 @@ def validate_pdf_integrity(file):
                 "PDF contains no pages."
             )
 
-    except PdfReadError:
+    except Exception:
         raise ValidationError(
             "Corrupted or invalid PDF file."
         )
@@ -72,7 +72,7 @@ def validate_pdf_integrity(file):
         
 RESUME_VALIDATORS = [
     validate_file_size,
-    validate_pdf_extension,
+    validate_file_extension,
     validate_pdf_mime,
     validate_pdf_signature,
     validate_pdf_integrity
