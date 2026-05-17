@@ -19,13 +19,26 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
         model = Application
         fields = ["cover_letter", "resume"]
 
-    def create(self, validated_data):
-        user = self.context["request"].user
-        job = self.context["job"]
+    def validate(self, attrs):
+        request = self.context.get("request")
+        job = self.context.get("job")
 
+        if request is None:
+            raise serializers.ValidationError(
+                {"context": "Request context is required."}
+            )
+
+        if job is None:
+            raise serializers.ValidationError(
+                {"context": "Job context is required."}
+            )
+
+        return attrs
+
+    def create(self, validated_data):
         return apply_to_job_service(
-            user=user,
-            job=job,
+            user=self.context["request"].user,
+            job=self.context["job"],
             **validated_data
         )
 
