@@ -10,7 +10,8 @@ class TestApplicationCreateSerializer:
             'I am very interested in this position and believe my skills are a great match.',
             'Please find my application for the job opening. I look forward to hearing from you.',
             'I have attached my resume and cover letter for your review. Thank you for considering my application.',
-            ''
+            '',
+            None
         ]
     )
     @pytest.mark.django_db
@@ -66,6 +67,18 @@ class TestApplicationCreateSerializer:
         
         assert not serializer.is_valid(), "Expected serializer to be invalid when resume is missing"
         assert 'resume' in serializer.errors, "Expected 'resume' field to have validation errors"
+        
+    @pytest.mark.django_db
+    def test_missing_context(self, valid_pdf):
+        data = {
+            'cover_letter': 'I am very interested in this position and believe my skills are a great match.',
+            'resume': valid_pdf
+        }
+        
+        serializer = ApplicationCreateSerializer(data=data, context={})
+        
+        assert not serializer.is_valid(), "Expected serializer to be invalid when context is missing"
+        assert 'context' in serializer.errors, "Expected 'context' field to have validation errors"
 
 class TestApplicationListSerializer:
     pass
