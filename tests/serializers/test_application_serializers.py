@@ -3,6 +3,18 @@ import pytest
 from applications.serializers import ApplicationStatusUpdateSerializer
 from applications.choices import ApplicationStatus
 
+class TestApplicationCreateSerializer:
+    pass
+
+class TestApplicationListSerializer:
+    pass
+
+class TestApplicationDetailSerializer:
+    pass
+
+class TestApplicationResponseSerializer:
+    pass
+
 class TestApplicationStatusUpdateSerializer:
     
     @pytest.mark.parametrize(
@@ -40,6 +52,3 @@ class TestApplicationStatusUpdateSerializer:
         serializer = ApplicationStatusUpdateSerializer(data=data)
         assert not serializer.is_valid(), "Expected serializer to be invalid"
         assert 'status' in serializer.errors, "Expected 'status' field to have validation errors"
-        
-class TestApplicationResponseSerializer:
-    pass
