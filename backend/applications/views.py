@@ -9,7 +9,7 @@ from rest_framework import status, generics
 
 from jobs.models import JobPost
 from .models import Application
-from .serializers import ApplicationSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
+from .serializers import ApplicationDetailSerializer, ApplicationListSerializer, ApplicationStatusUpdateSerializer, ApplicationResponseSerializer, ApplicationCreateSerializer
 from .services import respond_to_application_service, withdraw_application_service
 from .permissions import IsJobOwner, CanAccessApplication
 from .filters import ApplicationFilter
@@ -18,7 +18,7 @@ from .filters import ApplicationFilter
 # Create your views here.
 
 class ApplyToJobView(generics.CreateAPIView):
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_job(self):
@@ -32,7 +32,7 @@ class ApplyToJobView(generics.CreateAPIView):
         return context
 
 class ApplicationDetailView(generics.RetrieveAPIView):
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationDetailSerializer
     permission_classes = [IsAuthenticated, CanAccessApplication]
 
     queryset = Application.objects.all()
@@ -89,7 +89,7 @@ class WithdrawApplicationView(generics.UpdateAPIView):
         })
 
 class UserApplicationsListView(generics.ListAPIView):
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationListSerializer
     permission_classes = [IsAuthenticated]
     filterset_class = ApplicationFilter
 
@@ -97,7 +97,7 @@ class UserApplicationsListView(generics.ListAPIView):
         return Application.objects.filter(applicant=self.request.user)
 
 class JobApplicationsListView(generics.ListAPIView):
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationListSerializer
     permission_classes = [IsAuthenticated, IsJobOwner]
     filterset_class = ApplicationFilter
 

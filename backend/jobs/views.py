@@ -1,25 +1,53 @@
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import generics
 
 from .filters import JobPostFilter
 from .models import JobPost
 from .permissions import IsJobOwner
-from .serializers import JobPostSerializer
+from .serializers import JobPostCreateSerializer, JobPostSerializer, JobPostListSerializer
 from .choices import JobPostStatus
 
 # Create your views here.
 
-class JobPostListCreateView(generics.ListCreateAPIView):
+class JobPostListView(generics.ListAPIView):
+
     queryset = JobPost.objects.all()
-    serializer_class = JobPostSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    serializer_class = JobPostListSerializer
+
+    permission_classes = [AllowAny]
 
     filterset_class = JobPostFilter
+
     ordering_fields = ["posted_at", "salary"]
+
     ordering = ["-posted_at"]
+    
+class JobPostCreateView(generics.CreateAPIView):
+
+    queryset = JobPost.objects.all()
+
+    serializer_class = JobPostCreateSerializer
+
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(posted_by=self.request.user)
+
+        serializer.save(
+            posted_by=self.request.user
+        )
+
+# class JobPostListCreateView(generics.ListCreateAPIView):
+#     queryset = JobPost.objects.all()
+#     serializer_class = JobPostSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+#     filterset_class = JobPostFilter
+#     ordering_fields = ["posted_at", "salary"]
+#     ordering = ["-posted_at"]
+
+#     def perform_create(self, serializer):
+#         serializer.save(posted_by=self.request.user)
 
 class GetOwnerJobPostListView(generics.ListAPIView):
     serializer_class = JobPostSerializer

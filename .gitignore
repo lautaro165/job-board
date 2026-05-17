@@ -1,12 +1,50 @@
-env/
-
 __pycache__/
 *.pyc
 *.pyo
 *.png
 *.jpg
 
+db.sqlite3
+media/
+resumes/
+
+# dependencies
+node_modules/
+
+# production
+dist/
+build/
+
+# env files
+env/
+venv/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.vscode/
 .idea/
 
-.env
-.vscode
+# cache
+.cache/
+.parcel-cache/
+
+# testing
+coverage/
+
+# misc
+*.local

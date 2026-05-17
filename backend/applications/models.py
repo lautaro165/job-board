@@ -1,4 +1,7 @@
 from django.db import models
+
+from applications.validators.resume import RESUME_VALIDATORS
+
 from users.models import CustomUser
 from jobs.models import JobPost
 from .querysets import ApplicationQuerySet
@@ -13,7 +16,7 @@ class Application(models.Model):
     applicant = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     job = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name="applications")
     cover_letter = models.TextField(blank=True, null=True)
-    resume = models.FileField(upload_to="resumes/", blank=True, null=True)
+    resume = models.FileField(upload_to="resumes/", validators=RESUME_VALIDATORS)
     status = models.CharField(
         max_length=20,
         choices=ApplicationStatus.choices,

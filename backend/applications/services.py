@@ -1,10 +1,12 @@
 from applications.exceptions import ForbiddenApplicationStatusUpdate, TryingToApplyToOwnJob, ApplicationAlreadyExists, \
-    InvalidUpdateStatus
+    InvalidUpdateStatus, JobNotAvailable
 from applications.models import Application, ApplicationResponse, ApplicationStatus
 
 from rest_framework.exceptions import ValidationError, PermissionDenied
 
-def apply_to_job_service(user, job):
+from jobs.choices import JobPostStatus
+
+def apply_to_job_service(user, job, **application_data):
 
     if Application.objects.filter(applicant=user, job=job).exists():
         raise ApplicationAlreadyExists("You already applied this job")
@@ -12,9 +14,13 @@ def apply_to_job_service(user, job):
     if user == job.posted_by:
         raise TryingToApplyToOwnJob("You cannot apply your own job")
 
+    if job.status != JobPostStatus.ACTIVE:
+        raise JobNotAvailable("You cannot apply to a job that is not active")
+
     return Application.objects.create(
         applicant=user,
         job=job,
+        **application_data
     )
 
 def respond_to_application_service(

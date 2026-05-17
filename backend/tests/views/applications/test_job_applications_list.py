@@ -14,7 +14,7 @@ def test_get_job_applications_list_as_job_owner(user, application, job):
 
     assert response.status_code == 200
     assert len(response.data) == 1
-    assert response.data[0]["job"] == job.id
+    assert response.data[0]["job_id"] == job.id
 
 
 @pytest.mark.django_db
