@@ -14,13 +14,13 @@ class TestApplicationCreateSerializer:
         ]
     )
     @pytest.mark.django_db
-    def test_serializer_valid_data(self, cover_letter_content, valid_pdf, authenticated_request, job):
+    def test_serializer_valid_data(self, cover_letter_content, valid_pdf, authenticated_job_application_request):
         data = {
             'cover_letter': cover_letter_content,
             'resume': valid_pdf
         }
         
-        serializer = ApplicationCreateSerializer(data=data, context={'request': authenticated_request, 'job': job})
+        serializer = ApplicationCreateSerializer(data=data, context=authenticated_job_application_request)
         
         assert serializer.is_valid(), serializer.errors
         
@@ -38,8 +38,7 @@ class TestApplicationCreateSerializer:
     def test_invalid_application_serializer(
         self,
         request,
-        authenticated_request,
-        job,
+        authenticated_job_application_request,
         invalid_pdf_fixture
     ):
         invalid_pdf = request.getfixturevalue(invalid_pdf_fixture)
@@ -51,22 +50,19 @@ class TestApplicationCreateSerializer:
 
         serializer = ApplicationCreateSerializer(
             data=data,
-            context={
-                "request": authenticated_request,
-                "job": job
-            }
+            context=authenticated_job_application_request
         )
 
         assert not serializer.is_valid()
         assert "resume" in serializer.errors
         
     @pytest.mark.django_db
-    def test_serializer_missing_resume(self, authenticated_request, job):
+    def test_serializer_missing_resume(self, authenticated_job_application_request):
         data = {
             'cover_letter': 'I am very interested in this position and believe my skills are a great match.',
         }
         
-        serializer = ApplicationCreateSerializer(data=data, context={'request': authenticated_request, 'job': job})
+        serializer = ApplicationCreateSerializer(data=data, context=authenticated_job_application_request)
         
         assert not serializer.is_valid(), "Expected serializer to be invalid when resume is missing"
         assert 'resume' in serializer.errors, "Expected 'resume' field to have validation errors"
