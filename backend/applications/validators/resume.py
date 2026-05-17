@@ -10,18 +10,6 @@ ALLOWED_MIME_TYPES = {
 
 PDF_SIGNATURE = b"%PDF"
 
-
-def validate_resume_file(file):
-    RESUME_VALIDATORS = [
-        validate_file_size,
-        validate_pdf_extension,
-        validate_pdf_mime,
-        validate_pdf_signature
-    ]
-    
-    for validator in RESUME_VALIDATORS:
-        validator(file)
-
 def validate_file_size(file):
     if file.size > MAX_RESUME_SIZE:
         raise ValidationError(
@@ -59,3 +47,10 @@ def validate_pdf_signature(file):
         raise ValidationError(
             "Corrupted or invalid PDF file."
         )
+        
+RESUME_VALIDATORS = [
+    validate_file_size,
+    validate_pdf_extension,
+    validate_pdf_mime,
+    validate_pdf_signature
+]
