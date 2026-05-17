@@ -37,20 +37,17 @@ def authenticated_request(user):
     return make_request
 
 @pytest.fixture
-def authenticated_job_application_request(user, job):
+def application_context(user, job):
 
     factory = APIRequestFactory()
 
-    def make_request(data=None):
+    request = factory.post('/applications/create/')
+    request.user = user
 
-        request = factory.post('/applications/create/', data or {})
-
-        request.user = user
-        request.job = job
-
-        return request
-
-    return make_request
+    return {
+        "request": request,
+        "job": job
+    }
 
 @pytest.fixture
 def user():
