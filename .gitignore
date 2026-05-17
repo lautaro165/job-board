@@ -10,6 +10,8 @@ resumes/
 
 # dependencies
 node_modules/
+frontend
+node_modules/
 
 # production
 dist/
