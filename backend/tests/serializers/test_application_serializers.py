@@ -59,6 +59,17 @@ class TestApplicationCreateSerializer:
 
         assert not serializer.is_valid()
         assert "resume" in serializer.errors
+        
+    @pytest.mark.django_db
+    def test_serializer_missing_resume(self, authenticated_request, job):
+        data = {
+            'cover_letter': 'I am very interested in this position and believe my skills are a great match.',
+        }
+        
+        serializer = ApplicationCreateSerializer(data=data, context={'request': authenticated_request, 'job': job})
+        
+        assert not serializer.is_valid(), "Expected serializer to be invalid when resume is missing"
+        assert 'resume' in serializer.errors, "Expected 'resume' field to have validation errors"
 
 class TestApplicationListSerializer:
     pass
