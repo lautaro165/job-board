@@ -3,6 +3,9 @@ import magic
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 
+from pypdf import PdfReader
+from pypdf.errors import PdfReadError
+
 MAX_RESUME_SIZE = 5 * 1024 * 1024  # 5 MB
 
 ALLOWED_MIME_TYPES = {
@@ -24,12 +27,10 @@ def validate_pdf_extension(file, extension="pdf"):
 
 
 def validate_pdf_mime(file):
-    mime = magic.from_buffer(
-        file.read(2048),
-        mime=True
-    )
-
+    initial_pos = file.tell()
     file.seek(0)
+    mime = magic.from_buffer(file.read(2048), mime=True)
+    file.seek(initial_pos)
 
     if mime not in ALLOWED_MIME_TYPES:
         raise ValidationError(
