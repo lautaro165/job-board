@@ -1,57 +1,12 @@
 import pytest
 from rest_framework.test import APIRequestFactory
-import factory
-from factory.django import DjangoModelFactory
 
-from rest_framework_simplejwt.tokens import RefreshToken
-
+from tests.factories.users import CustomUserFactory
 from users.models import CustomUser
 from companies.models import Company
 from jobs.models import JobPost
 from jobs.choices import JobPostStatus, EmploymentTypes
 from applications.models import Application
-
-
-class CustomUserFactory(DjangoModelFactory):
-    class Meta:
-        model = CustomUser
-        skip_postgeneration_save = True
-    
-    username = factory.Sequence(lambda n: f'user_{n}')
-    email = factory.Sequence(lambda n: f'user_{n}@test.com')
-    password = 'TestPass123!'
-    first_name = factory.Faker('first_name')
-    last_name = factory.Faker('last_name')
-    role = 'dev'
-    is_active = True
-    
-    @factory.post_generation
-    def set_password(obj, create, extracted):
-        if not create:
-            return
-        obj.set_password(obj.password)
-        obj.save()
-        
-class CompanyFactory(DjangoModelFactory):
-    class Meta:
-        model = Company
-        skip_postgeneration_save = True
-    
-    name = factory.Sequence(lambda n: f'Company {n}')
-    owner = factory.SubFactory(CustomUserFactory)
-
-class JobPostFactory(DjangoModelFactory):
-    class Meta:
-        model = JobPost
-        skip_postgeneration_save = True
-    
-    title = factory.Sequence(lambda n: f'Job Title {n}')
-    description = factory.Faker('paragraph')
-    location = factory.Faker('city')
-    status = JobPostStatus.ACTIVE
-    employment_type = EmploymentTypes.FULL_TIME
-    salary = factory.Faker('random_number', digits=5)
-    posted_by = factory.SubFactory(CustomUserFactory)
 
 @pytest.fixture
 def valid_job_post_data(company, user):
@@ -106,27 +61,7 @@ def application(user, job):
 def testing_withdraw_application(user_2, job):
     return Application.objects.create(applicant=user_2, job=job)
 
-@pytest.fixture
-def user_tokens(user):
-    refresh = RefreshToken.for_user(user)
-    access = refresh.access_token
-    return {
-        "refresh": str(refresh),
-        "access": str(access),
-        "refresh_token_expires_time": int(refresh.lifetime.total_seconds()),
-        "access_token_expires_time": int(access.lifetime.total_seconds())
-    }
 
-@pytest.fixture
-def user_2_tokens(user_2):
-    refresh = RefreshToken.for_user(user_2)
-    access = refresh.access_token
-    return {
-        "refresh": str(refresh),
-        "access": str(access),
-        "refresh_token_expires_time": int(refresh.lifetime.total_seconds()),
-        "access_token_expires_time": int(access.lifetime.total_seconds())
-    }
 
 @pytest.fixture(scope="function")
 def existing_test_user(django_db_blocker):
@@ -156,5 +91,10 @@ def login_serializer_invalid_data():
     }
     
 pytest_plugins =[
-    "tests.fixtures.files"
+    "tests.fixtures.files",
+    "tests.fixtures.auth",
+    "tests.fixtures.jobs",
+    "tests.fixtures.company",
+    "tests.fixtures.applications",
+    "tests.fixtures.users",
 ]

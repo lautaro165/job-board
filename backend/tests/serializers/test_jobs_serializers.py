@@ -1,7 +1,9 @@
 import pytest
 
 from jobs.serializers import JobPostCreateSerializer, JobPostListSerializer
-from tests.conftest import CompanyFactory, CustomUserFactory, JobPostFactory
+
+from tests.conftest import CustomUserFactory
+from tests.factories.jobs import JobPostFactory
 
 
 class TestJobPostCreateSerializer:

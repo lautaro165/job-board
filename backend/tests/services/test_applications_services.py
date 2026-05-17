@@ -1,7 +1,6 @@
 import pytest
 
 from applications.services import apply_to_job_service
-from rest_framework.exceptions import ValidationError
 from applications.exceptions import TryingToApplyToOwnJob
 
 @pytest.mark.django_db
