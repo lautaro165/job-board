@@ -23,6 +23,42 @@ class TestApplicationCreateSerializer:
         serializer = ApplicationCreateSerializer(data=data, context={'request': authenticated_request, 'job': job})
         
         assert serializer.is_valid(), serializer.errors
+        
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "invalid_pdf_fixture",
+        [
+            "oversized_pdf",
+            "invalid_extension_file",
+            "fake_mime_pdf",
+            "invalid_signature_pdf",
+            "corrupted_integrity_pdf",
+        ]
+    )
+    def test_invalid_application_serializer(
+        self,
+        request,
+        authenticated_request,
+        job,
+        invalid_pdf_fixture
+    ):
+        invalid_pdf = request.getfixturevalue(invalid_pdf_fixture)
+
+        data = {
+            "cover_letter": "This is a valid cover letter.",
+            "resume": invalid_pdf,
+        }
+
+        serializer = ApplicationCreateSerializer(
+            data=data,
+            context={
+                "request": authenticated_request,
+                "job": job
+            }
+        )
+
+        assert not serializer.is_valid()
+        assert "resume" in serializer.errors
 
 class TestApplicationListSerializer:
     pass
