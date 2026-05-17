@@ -1,10 +1,20 @@
 import pytest
 
-from applications.serializers import ApplicationStatusUpdateSerializer
+from applications.serializers import ApplicationCreateSerializer, ApplicationStatusUpdateSerializer
 from applications.choices import ApplicationStatus
 
 class TestApplicationCreateSerializer:
-    pass
+    
+    @pytest.mark.django_db
+    def test_serializer_valid_data(self, valid_pdf, authenticated_request, job):
+        data = {
+            'cover_letter': 'I am very interested in this position. Please consider my application.',
+            'resume': valid_pdf
+        }
+        
+        serializer = ApplicationCreateSerializer(data=data, context={'request': authenticated_request, 'job': job})
+        
+        assert serializer.is_valid(), serializer.errors
 
 class TestApplicationListSerializer:
     pass
