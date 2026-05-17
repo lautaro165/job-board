@@ -79,6 +79,28 @@ class TestApplicationCreateSerializer:
         
         assert not serializer.is_valid(), "Expected serializer to be invalid when context is missing"
         assert 'context' in serializer.errors, "Expected 'context' field to have validation errors"
+        
+    @pytest.mark.parametrize(
+        'missing_context_data', [
+            'request',
+            'job'
+        ]
+    )
+    @pytest.mark.django_db
+    def test_invalid_context(self, valid_pdf, application_context, missing_context_data):
+        application_context_copy = application_context.copy()
+        
+        application_context_copy.pop(missing_context_data, None)
+        
+        data = {
+            'cover_letter': 'I am very interested in this position and believe my skills are a great match.',
+            'resume': valid_pdf
+        }
+
+        serializer = ApplicationCreateSerializer(data=data, context=application_context_copy)
+
+        assert not serializer.is_valid(), f"Expected serializer to be invalid when {missing_context_data} is missing from context"
+        assert missing_context_data in serializer.errors, "Expected 'context' field to have validation errors"
 
 class TestApplicationListSerializer:
     pass
