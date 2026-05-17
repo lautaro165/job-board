@@ -48,9 +48,32 @@ def validate_pdf_signature(file):
             "Corrupted or invalid PDF file."
         )
         
+def validate_pdf_integrity(file):
+
+    initial_pos = file.tell()
+
+    try:
+        file.seek(0)
+
+        reader = PdfReader(file)
+
+        if len(reader.pages) == 0:
+            raise ValidationError(
+                "PDF contains no pages."
+            )
+
+    except PdfReadError:
+        raise ValidationError(
+            "Corrupted or invalid PDF file."
+        )
+
+    finally:
+        file.seek(initial_pos)
+        
 RESUME_VALIDATORS = [
     validate_file_size,
     validate_pdf_extension,
     validate_pdf_mime,
-    validate_pdf_signature
+    validate_pdf_signature,
+    validate_pdf_integrity
 ]
