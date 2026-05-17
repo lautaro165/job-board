@@ -5,10 +5,18 @@ from applications.choices import ApplicationStatus
 
 class TestApplicationCreateSerializer:
     
+    @pytest.mark.parametrize(
+        'cover_letter_content', [
+            'I am very interested in this position and believe my skills are a great match.',
+            'Please find my application for the job opening. I look forward to hearing from you.',
+            'I have attached my resume and cover letter for your review. Thank you for considering my application.',
+            ''
+        ]
+    )
     @pytest.mark.django_db
-    def test_serializer_valid_data(self, valid_pdf, authenticated_request, job):
+    def test_serializer_valid_data(self, cover_letter_content, valid_pdf, authenticated_request, job):
         data = {
-            'cover_letter': 'I am very interested in this position. Please consider my application.',
+            'cover_letter': cover_letter_content,
             'resume': valid_pdf
         }
         
