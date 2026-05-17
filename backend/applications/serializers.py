@@ -23,14 +23,19 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         job = self.context.get("job")
 
-        if request is None:
+        if not (request or job):
             raise serializers.ValidationError(
-                {"context": "Request context is required."}
+                {"context": "Request and job are required."}
             )
 
-        if job is None:
+        if not request:
             raise serializers.ValidationError(
-                {"context": "Job context is required."}
+                {"request": "Request context is required."}
+            )
+
+        if not job:
+            raise serializers.ValidationError(
+                {"job": "Job context is required."}
             )
 
         return attrs
