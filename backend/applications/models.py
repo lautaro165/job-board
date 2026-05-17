@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.applications.validators.resume import RESUME_VALIDATORS
+from applications.validators.resume import RESUME_VALIDATORS
 
 from users.models import CustomUser
 from jobs.models import JobPost
