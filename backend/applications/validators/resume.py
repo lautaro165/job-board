@@ -1,6 +1,7 @@
 import magic
 
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 
 MAX_RESUME_SIZE = 5 * 1024 * 1024  # 5 MB
 
@@ -17,11 +18,9 @@ def validate_file_size(file):
         )
 
 
-def validate_pdf_extension(file):
-    if not file.name.lower().endswith(".pdf"):
-        raise ValidationError(
-            "Resume must be a PDF file."
-        )
+def validate_pdf_extension(file, extension="pdf"):
+    extension_validator = FileExtensionValidator(allowed_extensions=[extension])
+    extension_validator(file)
 
 
 def validate_pdf_mime(file):
