@@ -154,3 +154,7 @@ def login_serializer_invalid_data():
         'username': 'nonexistent',
         'password': 'WrongPassword'
     }
+    
+pytest_plugins =[
+    "tests.fixtures.files"
+]
