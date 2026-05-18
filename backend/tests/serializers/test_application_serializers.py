@@ -121,6 +121,13 @@ class TestApplicationListSerializer:
         }
 
         assert set(serializer.data.keys()) == expected_fields
+        
+    @pytest.mark.django_db
+    def test_application_list_serializer_returns_job_id(self):
+        application = ApplicationFactory()
+        serializer = ApplicationListSerializer(application)
+
+        assert serializer.data["job_id"] == application.job.id
 
 class TestApplicationDetailSerializer:
     pass
