@@ -1,7 +1,9 @@
 import pytest
 
-from applications.serializers import ApplicationCreateSerializer, ApplicationStatusUpdateSerializer
+from applications.serializers import ApplicationCreateSerializer, ApplicationListSerializer, ApplicationStatusUpdateSerializer
 from applications.choices import ApplicationStatus
+
+from tests.factories.applications import ApplicationFactory
 
 class TestApplicationCreateSerializer:
     
@@ -103,7 +105,22 @@ class TestApplicationCreateSerializer:
         assert missing_context_data in serializer.errors, "Expected 'context' field to have validation errors"
 
 class TestApplicationListSerializer:
-    pass
+    
+    @pytest.mark.django_db
+    def test_application_list_serializer_fields(self):
+        application = ApplicationFactory()
+        
+        serializer = ApplicationListSerializer(application)
+
+        expected_fields = {
+            "id",
+            "status",
+            "created_at",
+            "updated_at",
+            "job_id",
+        }
+
+        assert set(serializer.data.keys()) == expected_fields
 
 class TestApplicationDetailSerializer:
     pass
