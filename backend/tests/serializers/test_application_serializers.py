@@ -1,9 +1,9 @@
 import pytest
 
-from applications.serializers import ApplicationCreateSerializer, ApplicationDetailSerializer, ApplicationListSerializer, ApplicationStatusUpdateSerializer
+from applications.serializers import ApplicationCreateSerializer, ApplicationDetailSerializer, ApplicationListSerializer, ApplicationResponseSerializer, ApplicationStatusUpdateSerializer
 from applications.choices import ApplicationStatus
 
-from tests.factories.applications import ApplicationFactory
+from tests.factories.applications import ApplicationFactory, ApplicationResponseFactory
 
 class TestApplicationCreateSerializer:
     
@@ -175,11 +175,59 @@ class TestApplicationDetailSerializer:
         application = ApplicationFactory()
         
         serializer = ApplicationDetailSerializer(application)
+        print(serializer.data["resume"])
 
         assert serializer.data["resume"] is not None
 
 class TestApplicationResponseSerializer:
-    pass
+    
+    @pytest.mark.django_db
+    def test_application_response_serializer_returns_application_status(self):
+        response = ApplicationResponseFactory()
+
+        serializer = ApplicationResponseSerializer(response)
+
+        assert serializer.data["application_status"] == response.application.status
+        assert serializer.data["application_status"] in ApplicationStatus.values
+
+    @pytest.mark.django_db
+    def test_application_response_serializer_fields(self):
+        response = ApplicationResponseFactory()
+
+        serializer = ApplicationResponseSerializer(response)
+
+        expected_fields = {
+            "application_id",
+            "responder_id",
+            "message",
+            "created_at",
+            "application_status",
+        }
+
+        assert set(serializer.data.keys()) == expected_fields
+        
+    @pytest.mark.django_db
+    def test_application_response_serializer_status_is_read_only(self):
+        serializer = ApplicationResponseSerializer()
+
+        assert serializer.fields["application_status"].read_only
+        
+    @pytest.mark.parametrize(
+        ["serializer_field", "model_field"],
+        [
+            ("application_id", "application"),
+            ("responder_id", "responder"),
+        ]
+    )
+    @pytest.mark.django_db
+    def test_application_response_serializer_serializes_related_ids(self,
+        serializer_field, model_field
+    ):
+        response = ApplicationResponseFactory()
+
+        serializer = ApplicationResponseSerializer(response)
+        
+        assert serializer.data[serializer_field] == getattr(response, model_field).id
 
 class TestApplicationStatusUpdateSerializer:
     
