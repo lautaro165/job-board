@@ -1,6 +1,6 @@
 import pytest
 
-from applications.serializers import ApplicationCreateSerializer, ApplicationListSerializer, ApplicationStatusUpdateSerializer
+from applications.serializers import ApplicationCreateSerializer, ApplicationDetailSerializer, ApplicationListSerializer, ApplicationStatusUpdateSerializer
 from applications.choices import ApplicationStatus
 
 from tests.factories.applications import ApplicationFactory
@@ -137,7 +137,24 @@ class TestApplicationListSerializer:
             assert serializer.fields[field_name].read_only
 
 class TestApplicationDetailSerializer:
-    pass
+    
+    @pytest.mark.django_db
+    def test_application_detail_serializer_fields(self):
+        application = ApplicationFactory()
+        serializer = ApplicationDetailSerializer(application)
+
+        expected_fields = {
+            "id",
+            "status",
+            "created_at",
+            "updated_at",
+            "applicant_id",
+            "job_id",
+            "cover_letter",
+            "resume",
+        }
+
+        assert set(serializer.data.keys()) == expected_fields
 
 class TestApplicationResponseSerializer:
     pass
