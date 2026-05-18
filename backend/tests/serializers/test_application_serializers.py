@@ -244,7 +244,7 @@ class TestApplicationStatusUpdateSerializer:
     )
     def test_serializer_valid_updates(self, status, message):
         data = {
-            'status': status,
+            'application_status': status,
             'message': message
         }
         
@@ -259,10 +259,10 @@ class TestApplicationStatusUpdateSerializer:
     )
     def test_serializer_invalid_updates(self, status, message):
         data = {
-            'status': status,
+            'application_status': status,
             'message': message
         }
 
         serializer = ApplicationStatusUpdateSerializer(data=data)
         assert not serializer.is_valid(), "Expected serializer to be invalid"
-        assert 'status' in serializer.errors, "Expected 'status' field to have validation errors"
+        assert 'application_status' in serializer.errors, "Expected 'application_status' field to have validation errors"
