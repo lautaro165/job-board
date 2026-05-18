@@ -169,6 +169,14 @@ class TestApplicationDetailSerializer:
         serializer = ApplicationDetailSerializer(application)
         
         assert serializer.data[serializer_field_name] == getattr(application, model_field_name).id
+    
+    @pytest.mark.django_db
+    def test_application_detail_serializer_returns_resume(self):
+        application = ApplicationFactory()
+        
+        serializer = ApplicationDetailSerializer(application)
+
+        assert serializer.data["resume"] is not None
 
 class TestApplicationResponseSerializer:
     pass
