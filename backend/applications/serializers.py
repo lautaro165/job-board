@@ -58,8 +58,8 @@ class ApplicationListSerializer(_ApplicationBaseSerializer):
 class ApplicationDetailSerializer(_ApplicationBaseSerializer):
     class Meta(_ApplicationBaseSerializer.Meta):
         fields = _ApplicationBaseSerializer.Meta.fields + [
-            "applicant",
-            "job",
+            "applicant_id",
+            "job_id",
             "cover_letter",
             "resume",
         ]
