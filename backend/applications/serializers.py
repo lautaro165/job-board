@@ -65,11 +65,11 @@ class ApplicationDetailSerializer(_ApplicationBaseSerializer):
         ]
         
 class ApplicationResponseSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source="application.status", read_only=True)
+    application_status  = serializers.CharField(source="application.status", read_only=True)
     
     class Meta:
         model = ApplicationResponse
-        fields = ["application", "responder", "message", "created_at", "status"]
+        fields = ["application_id", "responder_id", "message", "created_at", "application_status"]
 
 class ApplicationStatusUpdateSerializer(serializers.Serializer):
     
@@ -80,5 +80,5 @@ class ApplicationStatusUpdateSerializer(serializers.Serializer):
         ApplicationStatus.REJECTED,
     ]
     
-    status = serializers.ChoiceField(choices=ALLOWED_STATUSES)
+    application_status = serializers.ChoiceField(choices=ALLOWED_STATUSES)
     message = serializers.CharField(required=False, allow_blank=True)

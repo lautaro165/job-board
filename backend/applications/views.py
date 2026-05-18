@@ -60,7 +60,7 @@ class RespondToApplicationView(generics.UpdateAPIView):
         response = respond_to_application_service(
             application=application,
             responder=request.user,
-            status=serializer.validated_data["status"],
+            status=serializer.validated_data["application_status"],
             message=serializer.validated_data.get("message"),
         )
         
