@@ -156,6 +156,20 @@ class TestApplicationDetailSerializer:
 
         assert set(serializer.data.keys()) == expected_fields
 
+    @pytest.mark.parametrize(
+        ["model_field_name", "serializer_field_name"],[
+            ("job","job_id"),
+            ("applicant", "applicant_id"),
+        ]
+    )
+    @pytest.mark.django_db
+    def test_application_detail_serializer_related_ids(self, model_field_name, serializer_field_name):
+        application = ApplicationFactory()
+        
+        serializer = ApplicationDetailSerializer(application)
+        
+        assert serializer.data[serializer_field_name] == getattr(application, model_field_name).id
+
 class TestApplicationResponseSerializer:
     pass
 
