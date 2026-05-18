@@ -28,7 +28,7 @@ class LoginUserSerializer(serializers.Serializer):
         refresh = RefreshToken.for_user(user)
         
         return {
-            'user': user,
+            'user': UserProfileInfoSerializer(user).data,
             'access': str(refresh.access_token),
             'refresh': str(refresh),
             'access_expires': int(refresh.access_token.lifetime.total_seconds()),
