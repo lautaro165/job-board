@@ -128,6 +128,13 @@ class TestApplicationListSerializer:
         serializer = ApplicationListSerializer(application)
 
         assert serializer.data["job_id"] == application.job.id
+        
+    @pytest.mark.django_db
+    def test_application_list_serializer_fields_are_read_only(self):
+        serializer = ApplicationListSerializer()
+
+        for field_name in serializer.fields:
+            assert serializer.fields[field_name].read_only
 
 class TestApplicationDetailSerializer:
     pass
