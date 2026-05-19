@@ -82,3 +82,9 @@ class ApplicationStatusUpdateSerializer(serializers.Serializer):
     
     application_status = serializers.ChoiceField(choices=ALLOWED_STATUSES)
     message = serializers.CharField(required=False, allow_blank=True)
+    
+
+class ResumeAnalysisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Application
+        fields = ["resume"]

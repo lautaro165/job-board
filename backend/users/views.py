@@ -6,10 +6,8 @@ from rest_framework.exceptions import PermissionDenied
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# from jobs.models import JobPost
-# from .models import Application
-from .serializers import LoginUserSerializer, CustomUserRegistrationSerializer, LogoutSerializer, UserProfileInfoSerializer
 from .models import CustomUser
+from .serializers import LoginUserSerializer, CustomUserRegistrationSerializer, LogoutSerializer, UserProfileInfoSerializer, UpdateUserPasswordSerializer
 
 # Create your views here.
 
@@ -59,9 +57,25 @@ class LogoutAPIView(APIView):
             status=status.HTTP_204_NO_CONTENT
         )
 
-class UserProfileView(generics.RetrieveUpdateAPIView):
+class UserProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileInfoSerializer
     permission_classes = [IsAuthenticated]
     
     def get_object(self):
         return self.request.user
+    
+class UpdateUserPasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        user = request.user
+        context = {
+            "user": user
+        }
+        
+        serializer = UpdateUserPasswordSerializer(data=request.data, context=context)
+        serializer.is_valid(raise_exception=True)
+        
+        serializer.save()
+        
+        return Response(data={"detail":"Password updated successfully"}, status=status.HTTP_200_OK)

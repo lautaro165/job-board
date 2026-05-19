@@ -63,7 +63,7 @@ class TestLoginUserSerializer:
         serializer = LoginUserSerializer(data={'username': test_username, 'password': test_password})
         assert serializer.is_valid()
         
-        assert serializer.validated_data['user'] == user
+        assert serializer.validated_data['user']["id"] == user.id
 
 
     @patch('users.serializers.authenticate')
@@ -176,7 +176,7 @@ class TestLoginUserSerializer:
         assert serializer.is_valid()
         
         assert 'user' in serializer.validated_data
-        assert serializer.validated_data['user'] == user
+        assert serializer.validated_data['user']['id'] == user.id
         
         mock_auth.assert_called_once_with(username=test_username, password=test_password)
 
