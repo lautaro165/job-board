@@ -2,7 +2,7 @@ import requests
 import json
 from django.conf import settings
 
-from .prompts import get_resume_analyzer_prompt
+from .prompts import get_resume_analyzer_prompt, get_jobs_search_prompt
 
 class Agent:
     def __init__(self, language="English"):
@@ -16,7 +16,14 @@ class Agent:
         user_prompt = f"Resume Content: {resume_content}\n\nJob Description: {job_post_info}"
         
         return self.call_model(system_prompt=system_prompt, user_prompt=user_prompt)
+    
+    def search_jobs(self, user_input):
+        system_prompt = get_jobs_search_prompt(self.language)
+        user_prompt = f"User_prompt: {user_input}"
         
+        return self.call_model(system_prompt, user_prompt)
+        
+    
     def call_model(self, system_prompt, user_prompt, format="json", temperature=0.0):
         system_prompt += f"\n You must respond in {self.language}"
         data = {
