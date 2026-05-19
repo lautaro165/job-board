@@ -3,9 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 
-from django.shortcuts import get_object_or_404
-
-from applications.serializers import ResumeAnalysisSerializer
+from agent.serializers.input_serializers import ResumeAnalysisSerializer, JobSearchHumanInputSerializer
 
 
 from .serializers import JobPostCreateSerializer, JobPostSerializer, JobPostListSerializer
@@ -13,7 +11,7 @@ from .permissions import IsJobOwner
 from .filters import JobPostFilter
 from .choices import JobPostStatus
 from .models import JobPost
-from .services import analyze_resume_service
+from .services import analyze_resume_service, get_jobs_by_agent_service
 
 # Create your views here.
 
@@ -46,7 +44,6 @@ class JobPostCreateView(generics.CreateAPIView):
         )
 
 class ResumeAnalysisView(generics.GenericAPIView):
-
     permission_classes = [IsAuthenticated]
     serializer_class = ResumeAnalysisSerializer
 
@@ -60,6 +57,20 @@ class ResumeAnalysisView(generics.GenericAPIView):
         analysis = analyze_resume_service(resume_file, job_id)
 
         return Response(analysis, status=status.HTTP_200_OK)
+    
+class GetJobsByAgentView(generics.GenericAPIView):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = JobSearchHumanInputSerializer
+    
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user_prompt = serializer.validated_data["user_prompt"]
+        
+        results = get_jobs_by_agent_service(user_prompt)
+        
+        return Response({"detail":JobPostListSerializer(results, many=True).data}, status=status.HTTP_200_OK)
 
 class GetOwnerJobPostListView(generics.ListAPIView):
     serializer_class = JobPostSerializer
