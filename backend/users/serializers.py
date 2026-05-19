@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
 
 from users.models import CustomUser
 
@@ -93,3 +94,36 @@ class LogoutSerializer(serializers.Serializer):
             RefreshToken(self.token).blacklist()
         except TokenError:
             raise serializers.ValidationError({'refresh': 'Invalid or expired token'})
+        
+class UpdateUserPasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+    new_password2 = serializers.CharField(write_only=True, min_length=8)
+    
+    def validate_old_password(self, value):
+        user = self.context["user"]
+        
+        if not user.check_password(value):
+            raise ValidationError("Provided password is not correct.")
+        
+        return value
+    
+    def validate(self, data):
+        new_password = data.get("new_password")
+        new_password2 = data.get("new_password2")
+        
+        if new_password != new_password2:
+            raise ValidationError("Provided new passwords don't match.")
+        
+        validate_password(new_password, user=self.context["user"])
+        
+        return data
+    
+    def save(self):
+        
+        user = self.context["user"]
+        
+        user.set_password(self.validated_data["new_password"])
+        user.save()
+        
+        return user
