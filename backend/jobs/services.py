@@ -26,3 +26,6 @@ def analyze_resume_service(resume_file, job_id):
         raise ValidationError(analysis)
     
     return analysis
+
+def get_jobs_by_agent_service(user_prompt):
+    pass
