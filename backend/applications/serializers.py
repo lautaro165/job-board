@@ -19,13 +19,31 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
         model = Application
         fields = ["cover_letter", "resume"]
 
-    def create(self, validated_data):
-        user = self.context["request"].user
-        job = self.context["job"]
+    def validate(self, attrs):
+        request = self.context.get("request")
+        job = self.context.get("job")
 
+        if not (request or job):
+            raise serializers.ValidationError(
+                {"context": "Request and job are required."}
+            )
+
+        if not request:
+            raise serializers.ValidationError(
+                {"request": "Request context is required."}
+            )
+
+        if not job:
+            raise serializers.ValidationError(
+                {"job": "Job context is required."}
+            )
+
+        return attrs
+
+    def create(self, validated_data):
         return apply_to_job_service(
-            user=user,
-            job=job,
+            user=self.context["request"].user,
+            job=self.context["job"],
             **validated_data
         )
 
@@ -40,18 +58,18 @@ class ApplicationListSerializer(_ApplicationBaseSerializer):
 class ApplicationDetailSerializer(_ApplicationBaseSerializer):
     class Meta(_ApplicationBaseSerializer.Meta):
         fields = _ApplicationBaseSerializer.Meta.fields + [
-            "applicant",
-            "job",
+            "applicant_id",
+            "job_id",
             "cover_letter",
             "resume",
         ]
         
 class ApplicationResponseSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source="application.status", read_only=True)
+    application_status  = serializers.CharField(source="application.status", read_only=True)
     
     class Meta:
         model = ApplicationResponse
-        fields = ["application", "responder", "message", "created_at", "status"]
+        fields = ["application_id", "responder_id", "message", "created_at", "application_status"]
 
 class ApplicationStatusUpdateSerializer(serializers.Serializer):
     
@@ -62,5 +80,5 @@ class ApplicationStatusUpdateSerializer(serializers.Serializer):
         ApplicationStatus.REJECTED,
     ]
     
-    status = serializers.ChoiceField(choices=ALLOWED_STATUSES)
+    application_status = serializers.ChoiceField(choices=ALLOWED_STATUSES)
     message = serializers.CharField(required=False, allow_blank=True)

@@ -14,7 +14,7 @@ def test_get_application_detail_as_applicant(user, application):
 
     assert response.status_code == 200
     assert response.data["id"] == application.id
-    assert response.data["applicant"] == application.applicant.id
+    assert response.data["applicant_id"] == application.applicant.id
 
 
 @pytest.mark.django_db
@@ -28,7 +28,7 @@ def test_get_application_detail_as_job_owner(user, user_2, job):
 
     assert response.status_code == 200
     assert response.data["id"] == application.id
-    assert response.data["job"] == job.id
+    assert response.data["job_id"] == job.id
 
 
 @pytest.mark.django_db

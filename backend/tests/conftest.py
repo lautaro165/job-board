@@ -37,6 +37,19 @@ def authenticated_request(user):
     return make_request
 
 @pytest.fixture
+def application_context(user, job):
+
+    factory = APIRequestFactory()
+
+    request = factory.post('/applications/create/')
+    request.user = user
+
+    return {
+        "request": request,
+        "job": job
+    }
+
+@pytest.fixture
 def user():
     return CustomUser.objects.create_user(username="random_user",email="random_user@gmail.com",password="123456", role="dev")
 
