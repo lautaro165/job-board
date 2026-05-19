@@ -85,6 +85,8 @@ class ApplicationStatusUpdateSerializer(serializers.Serializer):
     
 
 class ResumeAnalysisSerializer(serializers.ModelSerializer):
+    resume = serializers.FileField(required=True)
+    
     class Meta:
         model = Application
         fields = ["resume"]
